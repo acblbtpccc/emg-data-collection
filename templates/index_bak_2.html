@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMG Data Collection</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <style>
+        body {
+            padding: 20px;
+        }
+        #emgChart {
+            max-height: 400px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mb-4">Data Collection Control</h1>
+        <button id="startButton" class="btn btn-success mb-2">Start Collection</button>
+        <button id="stopButton" class="btn btn-danger mb-2">Stop Collection</button>
+
+        <h2 class="mb-4">Latest EMG Data</h2>
+        <ul id="emgDataList" class="list-group mb-4"></ul>
+
+        <h2 class="mb-4">EMG Data Visualization</h2>
+        <canvas id="emgChart"></canvas>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            let emgChartCtx = document.getElementById('emgChart').getContext('2d');
+            let emgChart = new Chart(emgChartCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'EMG Data 1',
+                        data: [],
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 2,
+                        fill: false
+                    }, {
+                        label: 'EMG Data 2',
+                        data: [],
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 2,
+                        fill: false
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'second'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Time'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'EMG Value'
+                            }
+                        }
+                    }
+                }
+            });
+
+            $('#startButton').click(function() {
+                $.get('/start_collection', function(data) {
+                    alert(data.status);
+                });
+            });
+
+            $('#stopButton').click(function() {
+                $.get('/stop_collection', function(data) {
+                    alert(data.status);
+                });
+            });
+
+            function fetchLatestEmgData() {
+                $.get('/latest_emg_data', function(data) {
+                    var $emgDataList = $('#emgDataList');
+                    $emgDataList.empty();
+                    let timestamps = [];
+                    let emgValues1 = [];
+                    let emgValues2 = [];
+
+                    data.forEach(function(item) {
+                        var $li = $('<li>').addClass('list-group-item').text(item[0] + ": " + item[1]);
+                        $emgDataList.append($li);
+
+                        timestamps.push(new Date(item[0]));
+                        let emgValues = item[1].split(',').map(parseFloat);
+                        emgValues1.push(emgValues[0]);
+                        emgValues2.push(emgValues[1]);
+                    });
+
+                    emgChart.data.labels = timestamps;
+                    emgChart.data.datasets[0].data = emgValues1;
+                    emgChart.data.datasets[1].data = emgValues2;
+                    emgChart.update();
+                });
+            }
+
+            // Fetch the latest EMG data every 5 seconds
+            setInterval(fetchLatestEmgData, 5000);
+        });
+        // $(document).ready(function() {
+        //     let emgChartCtx = document.getElementById('emgChart').getContext('2d');
+        //     let emgChart = new Chart(emgChartCtx, {
+        //         type: 'line',
+        //         data: {
+        //             labels: [],
+        //             datasets: [{
+        //                 label: 'EMG Data',
+        //                 data: [],
+        //                 borderColor: 'rgba(75, 192, 192, 1)',
+        //                 borderWidth: 2,
+        //                 fill: false
+        //             }]
+        //         },
+        //         options: {
+        //             scales: {
+        //                 x: {
+        //                     type: 'time',
+        //                     time: {
+        //                         unit: 'second'
+        //                     },
+        //                     title: {
+        //                         display: true,
+        //                         text: 'Time'
+        //                     }
+        //                 },
+        //                 y: {
+        //                     title: {
+        //                         display: true,
+        //                         text: 'EMG Value'
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     });
+
+        //     $('#startButton').click(function() {
+        //         $.get('/start_collection', function(data) {
+        //             alert(data.status);
+        //         });
+        //     });
+
+        //     $('#stopButton').click(function() {
+        //         $.get('/stop_collection', function(data) {
+        //             alert(data.status);
+        //         });
+        //     });
+
+        //     function fetchLatestEmgData() {
+        //         $.get('/latest_emg_data', function(data) {
+        //             var $emgDataList = $('#emgDataList');
+        //             $emgDataList.empty();
+        //             let timestamps = [];
+        //             let emgValues1 = [];
+        //             let emgValues2 = [];
+
+        //             data.forEach(function(item) {
+        //                 var $li = $('<li>').addClass('list-group-item').text(item[0] + ": " + item[1]);
+        //                 $emgDataList.append($li);
+
+        //                 timestamps.push(new Date(item[0]));
+        //                 let emgValues = item[1].split(',').map(parseFloat);
+        //                 emgValues1.push(emgValues[0]);
+        //                 emgValues2.push(emgValues[1]);
+        //             });
+
+        //             emgChart.data.labels = timestamps;
+        //             emgChart.data.datasets[0].data = emgValues1;
+        //             emgChart.update();
+        //         });
+        //     }
+
+        //     // Fetch the latest EMG data every 5 seconds
+        //     setInterval(fetchLatestEmgData, 5000);
+        // });
+//     </script>
+// </body>
+// </html>
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMG Data Collection</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            padding: 20px;
+        }
+        #emgChart {
+            max-height: 400px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mb-4">Data Collection Control</h1>
+        <button id="startButton" class="btn btn-success mb-2">Start Collection</button>
+        <button id="stopButton" class="btn btn-danger mb-2">Stop Collection</button>
+
+        <h2 class="mb-4">Latest EMG Data</h2>
+        <ul id="emgDataList" class="list-group mb-4"></ul>
+
+        <h2 class="mb-4">EMG Data Visualization</h2>
+        <canvas id="emgChart"></canvas>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            let emgChartCtx = document.getElementById('emgChart').getContext('2d');
+            let emgChart = new Chart(emgChartCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'EMG Data',
+                        data: [],
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 2,
+                        fill: false
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'second'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Time'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'EMG Value'
+                            }
+                        }
+                    }
+                }
+            });
+
+            $('#startButton').click(function() {
+                console.log('Start button clicked');
+                $.get('/start_collection', function(data) {
+                    alert(data.status);
+                });
+            });
+
+            $('#stopButton').click(function() {
+                console.log('Stop button clicked');
+                $.get('/stop_collection', function(data) {
+                    alert(data.status);
+                });
+            });
+
+            function fetchLatestEmgData() {
+                $.get('/latest_emg_data', function(data) {
+                    var $emgDataList = $('#emgDataList');
+                    $emgDataList.empty();
+                    let timestamps = [];
+                    let emgValues1 = [];
+                    let emgValues2 = [];
+
+                    data.forEach(function(item) {
+                        var $li = $('<li>').addClass('list-group-item').text(item[0] + ": " + item[1]);
+                        $emgDataList.append($li);
+
+                        timestamps.push(new Date(item[0]));
+                        let emgValues = item[1].split(',').map(parseFloat);
+                        emgValues1.push(emgValues[0]);
+                        emgValues2.push(emgValues[1]);
+                    });
+
+                    emgChart.data.labels = timestamps;
+                    emgChart.data.datasets[0].data = emgValues1;
+                    emgChart.update();
+                });
+            }
+
+            // Fetch the latest EMG data every 5 seconds
+            setInterval(fetchLatestEmgData, 5000);
+        });
+    </script>
+</body>
+</html> -->

@@ -1,0 +1,75 @@
+
+<!-- <!DOCTYPE html>
+<html>
+<head>
+    <title>Data Collection</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Data Collection Control</h1>
+    <button id="startButton">Start Collection</button>
+    <button id="stopButton">Stop Collection</button>
+
+    <h2>Latest EMG Data</h2>
+    <ul id="emgDataList">
+    </ul>
+
+    <script>
+        $(document).ready(function() {
+            $('#startButton').click(function() {
+                $.get('/start_collection', function(data) {
+                    alert(data.status);
+                });
+            });
+
+            $('#stopButton').click(function() {
+                $.get('/stop_collection', function(data) {
+                    alert(data.status);
+                });
+            });
+
+            function fetchLatestEmgData() {
+                $.get('/latest_emg_data', function(data) {
+                    var $emgDataList = $('#emgDataList');
+                    $emgDataList.empty();
+                    data.forEach(function(item) {
+                        var $li = $('<li>').text(item[0] + ": " + item[1]);
+                        $emgDataList.append($li);
+                    });
+                });
+            }
+
+            // Fetch the latest EMG data every 5 seconds
+            setInterval(fetchLatestEmgData, 50);
+        });
+    </script>
+</body>
+</html> -->
+
+<!-- templates/index.html -->
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMG Data Collection Web Page</title>
+    <script>
+        async function startCollection() {
+            let response = await fetch('/start_collection');
+            let result = await response.json();
+            alert(result.status);
+        }
+
+        async function stopCollection() {
+            let response = await fetch('/stop_collection');
+            let result = await response.json();
+            alert(result.status);
+        }
+    </script>
+</head>
+<body>
+    <h1>EMG Data Collection Web Page</h1>
+    <button onclick="startCollection()">Start EMG Data Collection</button>
+    <button onclick="stopCollection()">Stop EMG Data Collection</button>
+</body>
+</html> -->
