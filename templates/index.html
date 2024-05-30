@@ -44,7 +44,7 @@
 </head>
 <body>
     <div class="container">
-        <h1 class="mb-4 text-center">EMG Data Collection Control Panel</h1>
+        <h1 class="mb-4 text-center"> EMG and Depth Data Collection Control Panel</h1>
         
         <div class="card mb-4">
             <div class="card-header">
@@ -60,6 +60,12 @@
                         <label for="action" class="mr-2">Action</label>
                         <input type="text" id="action" class="form-control">
                     </div>
+                    <div class="form-group">
+                        <label for="pattern" class="mr-2">Description</label>
+                        <input type="text" id="pattern" class="form-control">
+                    </div>
+                </div>
+                <div class="form-inline mb-4">
                     <button id="startSensorsButton" class="btn btn-primary btn-margin-right">Start Sensors</button>
                     <button id="startButton" class="btn btn-success btn-margin-right">Start Collection</button>
                     <button id="stopButton" class="btn btn-danger btn-margin-right">Stop Collection</button>
@@ -184,9 +190,10 @@
             $('#startButton').click(function() {
                 let subjectName = $('#subjectName').val();
                 let action = $('#action').val();
+                let pattern = $('#pattern').val();
 
                 if (subjectName && action) {
-                    $.get('/start_collection', { subject: subjectName, action: action }, function(data) {
+                    $.get('/start_collection', { subject: subjectName, action: action, pattern: pattern }, function(data) {
                         alert(data.status);
                     });
                 } else {

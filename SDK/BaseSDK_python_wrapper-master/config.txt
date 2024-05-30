@@ -1,2 +1,0 @@
-system = Ubuntu20.04
-url = https://github.com

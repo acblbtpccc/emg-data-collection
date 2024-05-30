@@ -3,13 +3,13 @@ from flask import Flask, request, render_template, jsonify
 import threading
 import serial
 import time
-from collect_data_all import prepare_output_dir, collect_depthandrgb, collect_emg, parse_args
+from collect_data_all import prepare_output_dir, collect_depthandrgb, collect_emg, parse_args, save_depthandrgb_web, save_emg_web
 from config import parse_args, parse_args_sensors, DEPTH_DIR, RGB_DIR, EMG_DIR, DATA_DIR
 from camera_utils import init_camera, set_datamode, set_resolution, set_mapper, set_range
 from API.Vzense_api_710 import *
 from serial.serialutil import SerialException
 import subprocess
-
+import datetime
 
 app = Flask(__name__)
 threads = []
@@ -18,6 +18,9 @@ emg_lock = threading.Lock()
 
 # Flag to indicate if data collection is running
 is_collecting = {"depth_and_rgb": False, "emg": False}
+# Events to signal threads to stop
+stop_events = {"depth_and_rgb": threading.Event(), "emg": threading.Event()}
+
 
 @app.route('/')
 def index():
@@ -26,6 +29,8 @@ def index():
 @app.route('/start_sensors')
 def start_sensors():
     global threads
+    global camera
+    global emg_serial
     # try:   
     def list_usb_devices():
         try:
@@ -64,19 +69,12 @@ def start_sensors():
 
         # set depth range: near, mid, far
         set_range(camera, range='mid')
-        _, depthrange = camera.Ps2_GetDepthRange()
-        print("depthrange: ", depthrange)
-        _, depth_max, value_min, value_max = camera.Ps2_GetMeasuringRange(PsDepthRange(depthrange.value))
-        print("depth_max, value_min, value_max: ", depth_max, value_min, value_max)
 
         return camera
 
     def start_emg(cfg):
-        print(cfg)
         ser_port = cfg.SERIALPORT
         baud_rate = cfg.BAUDRATE
-        emg_path = ''
-        header = ['timestamp', 'EMG']
         def open_serial_port():
             try:
                 return serial.Serial(ser_port, baud_rate)
@@ -87,23 +85,19 @@ def start_sensors():
         ser = open_serial_port()
         return ser
     
-    # print(list_usb_devices())
-    # busnum = 1
-    # devnum = 8
-    # test_device_access(busnum, devnum)
     
     cfg, _ = parse_args_sensors()
-    # cfg = prepare_output_dir(cfg)
 
     camera = start_depth(cfg)
     time.sleep(1)
 
     read_try_times = 100
     while read_try_times > 0:
-        depth_ret, frameready = camera.Ps2_ReadNextFrame()
+        depth_ret, _ = camera.Ps2_ReadNextFrame()
         if depth_ret != 0:
             print("Ps2_ReadNextFrame failed:", depth_ret, read_try_times)
         if depth_ret == 0:
+            print("Ps2_ReadNextFrame successful")
             break
         read_try_times -= 1
         time.sleep(1)
@@ -117,13 +111,6 @@ def start_sensors():
         line = emg_serial.readline().decode().strip()
         if line == 0:
             return jsonify({"status": "Serial No Data Read Out"}), 500
-
-    # except SerialException as se:
-    #     print("SerialException caught:", se)
-    #     return jsonify({"status": "Serial Exception"}), 500
-    # except Exception as e:
-    #     print("Exception caught:", e)
-    #     return jsonify({"status": "General Exception"}), 500
         
     return jsonify({"status": "Sensors started successfully"}), 200
 
@@ -133,45 +120,60 @@ def start_collection():
 
     subject = request.args.get('subject')
     action = request.args.get('action')
+    pattern = request.args.get('pattern')
     
-    if not subject or not action:
-        return jsonify({"status": "Missing subject or action"}), 400
+    if not subject or not action or not pattern:
+        return jsonify({"status": "Missing subject or action or Description"}), 400
     
     cfg, _ = parse_args(subject, action)
     cfg = prepare_output_dir(cfg)
 
+    current_sec = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+    label_path = os.path.join(cfg.label_dir, current_sec + '.txt')
+
+    # Write the label value to the label_path.txt file
+    with open(label_path, 'w') as f:
+        f.write(pattern)
+
     if not is_collecting["depth_and_rgb"]:
-        thread1 = threading.Thread(target=collect_depthandrgb, args=(cfg,))
+        is_collecting["depth_and_rgb"] = True
+        stop_events["depth_and_rgb"].clear()
+        thread1 = threading.Thread(target=save_depthandrgb_web, args=(cfg, camera, stop_events["depth_and_rgb"], current_sec))
         thread1.start()
         threads.append(thread1)
-        is_collecting["depth_and_rgb"] = True
-
+        
     if not is_collecting["emg"]:
-        thread2 = threading.Thread(target=collect_emg, args=(cfg, emg_data, emg_lock))
+        is_collecting["emg"] = True
+        stop_events["emg"].clear()
+        thread2 = threading.Thread(target=save_emg_web, args=(cfg, emg_serial, stop_events["emg"], current_sec))
         thread2.start()
         threads.append(thread2)
-        is_collecting["emg"] = True
 
     return jsonify({"status": "Data collection started"})
 
 @app.route('/stop_collection')
 def stop_collection():
     global is_collecting
-    # Normally, you would have a way to signal the threads to stop
-    # Here, we just join them (this will hang if the threads are in an infinite loop)
+
+    # Signal the threads to stop
+    stop_events["depth_and_rgb"].set()
+    stop_events["emg"].set()
+
+    # Join the threads to ensure they have stopped
     for thread in threads:
         if thread.is_alive():
             thread.join()
 
     is_collecting = {"depth_and_rgb": False, "emg": False}
+    threads.clear()   
     return jsonify({"status": "Data collection stopped"})
 
-@app.route('/latest_emg_data')
-def latest_emg_data():
-    with emg_lock:
-        # Return the last 10 EMG data points, formatted as a list of tuples
-        print("[Debug] emg_data:", emg_data)
-        return jsonify([(item[0], item[1]) for item in emg_data[-50:]])
+# @app.route('/latest_emg_data')
+# def latest_emg_data():
+#     with emg_lock:
+#         # Return the last 10 EMG data points, formatted as a list of tuples
+#         print("[Debug] emg_data:", emg_data)
+#         return jsonify([(item[0], item[1]) for item in emg_data[-50:]])
     
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

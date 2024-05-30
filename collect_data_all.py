@@ -8,7 +8,7 @@ from API.Vzense_api_710 import *
 import cv2
 import numpy as np
 import threading
-from config import parse_args, DEPTH_DIR, RGB_DIR, EMG_DIR, DATA_DIR
+from config import parse_args, DEPTH_DIR, RGB_DIR, EMG_DIR, DATA_DIR, LABEL_DIR
 from camera_utils import init_camera, set_datamode, set_resolution, set_mapper, set_range
 from serial.serialutil import SerialException
 
@@ -20,23 +20,120 @@ def prepare_output_dir(cfg):
     os.makedirs(cfg.rgb_dir, exist_ok=True)
     cfg.emg_dir = os.path.join(base_path, EMG_DIR)
     os.makedirs(cfg.emg_dir, exist_ok=True)
+    cfg.label_dir = os.path.join(base_path, LABEL_DIR)
+    os.makedirs(cfg.label_dir, exist_ok=True)
     return cfg
 
-def collect_depthandrgb(cfg):
-    # init camera
-    camera = init_camera()
+def save_depthandrgb_web(cfg, camera, stop_event, current_sec):
+    print("stop_event: ", stop_event)
+    _, depthrange = camera.Ps2_GetDepthRange()
+    _, depth_max, value_min, value_max = camera.Ps2_GetMeasuringRange(PsDepthRange(depthrange.value))
+    print("depth_max, value_min, value_max: ", depth_max, value_min, value_max)
 
-    # set mode: Output both Depth and RGB frames in 30fps
-    set_datamode(camera, mode='PsDepthAndRGB_30')
+    headers = ['timestamp', 'frame_id']
+    depth_video_path = ''
+    num_recorded_frame = 0
 
-    # set RGB resoultion: (640, 280), (1280, 720), (640, 360)
-    set_resolution(camera, resol='PsRGB_Resolution_640_480')  
+    # current_sec = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
-    # mapping RGB image to depth camera space
-    set_mapper(camera, mapper='r2d') 
+    # init path of video file and frame info csv
+    depth_video_path = os.path.join(cfg.depth_dir, current_sec + '.mp4')
+    rgb_video_path = os.path.join(cfg.rgb_dir, current_sec + '.mp4')
+    frame_info_path = os.path.join(cfg.rgb_dir, current_sec + '.csv')
+    print("New video saving path: {:s}".format(depth_video_path))
 
-    # set depth range: near, mid, far
-    set_range(camera, range='mid')
+    # init video writer
+    vout_d = cv2.VideoWriter()
+    vout_d.open(depth_video_path, cv2.VideoWriter_fourcc(*'mp4v'), cfg.CMAERA.FPS, (cfg.CMAERA.WIDTH, cfg.CMAERA.HEIGHT), isColor=False)
+
+    vout_rgb = cv2.VideoWriter()
+    vout_rgb.open(rgb_video_path, cv2.VideoWriter_fourcc(*'mp4v'), cfg.CMAERA.FPS, (cfg.CMAERA.WIDTH, cfg.CMAERA.HEIGHT), isColor=True)
+
+    # init csv writer
+    with open(frame_info_path, "a") as frame_info:
+        f_csv = csv.writer(frame_info)
+        f_csv.writerow(headers)
+        
+    try:
+        while not stop_event.is_set():
+            # while True:
+            ret, frameready = camera.Ps2_ReadNextFrame()
+            if  ret != 0:
+                print("Ps2_ReadNextFrame failed:",ret)
+                time.sleep(1)
+
+            if frameready.mappedDepth:
+                ret, depthframe = camera.Ps2_GetFrame(PsFrameType.PsMappedDepthFrame)     # (480, 640)
+                if ret == 0:
+                    frametmp = np.ctypeslib.as_array(depthframe.pFrameData, (1, depthframe.width * depthframe.height * 2))
+                    frametmp.dtype = np.uint16
+                    frametmp.shape = (depthframe.height, depthframe.width)
+                    img = np.int32(frametmp)
+                    img = img*255 / depth_max
+                    img = np.clip(img, 0, 255)
+                    img = np.uint8(img)
+                    timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S.%f")
+                    vout_d.write(img)
+
+                    # log frame info to frame_info_path
+                    num_recorded_frame += 1
+                    with open(frame_info_path, "a") as frame_info:
+                        f_csv = csv.writer(frame_info)
+                        f_csv.writerow([timestamp, num_recorded_frame])
+
+            if frameready.rgb:
+                ret, rgbframe = camera.Ps2_GetFrame(PsFrameType.PsRGBFrame)
+                if  ret == 0:
+                    frametmp = numpy.ctypeslib.as_array(rgbframe.pFrameData, (1, rgbframe.width * rgbframe.height * 3))
+                    frametmp.dtype = numpy.uint8
+                    frametmp.shape = (rgbframe.height, rgbframe.width, 3)
+                    vout_rgb.write(frametmp)
+                    
+    finally:
+        print("video {:s} has been writen!".format(depth_video_path))
+        vout_d.release()
+        vout_rgb.release()
+
+ 
+def save_emg_web(cfg, emg_serial, stop_event, current_sec):
+    print("stop_event: ", stop_event)
+
+    emg_path = ''
+    header = ['timestamp', 'EMG']
+    # current_sec = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    emg_path = os.path.join(cfg.emg_dir, current_sec+'.csv')
+    with open(emg_path, 'a') as emg_data:
+        writer = csv.writer(emg_data)
+        writer.writerow(header)  
+    try:
+        while not stop_event.is_set():
+            if emg_serial.in_waiting > 0:
+                line = emg_serial.readline().decode().strip()  
+                timestamp = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S.%f')
+                with open(emg_path, "a") as emg_data:
+                    writer = csv.writer(emg_data)
+                    writer.writerow([timestamp, line])
+
+    finally:
+        print("EMGs {:s} has been writen!".format(emg_path))
+
+
+
+def collect_depthandrgb(cfg, camera):
+    # # init camera
+    # camera = init_camera()
+
+    # # set mode: Output both Depth and RGB frames in 30fps
+    # set_datamode(camera, mode='PsDepthAndRGB_30')
+
+    # # set RGB resoultion: (640, 280), (1280, 720), (640, 360)
+    # set_resolution(camera, resol='PsRGB_Resolution_640_480')  
+
+    # # mapping RGB image to depth camera space
+    # set_mapper(camera, mapper='r2d') 
+
+    # # set depth range: near, mid, far
+    # set_range(camera, range='mid')
     _, depthrange = camera.Ps2_GetDepthRange()
     _, depth_max, value_min, value_max = camera.Ps2_GetMeasuringRange(PsDepthRange(depthrange.value))
     print("depth_max, value_min, value_max: ", depth_max, value_min, value_max)
@@ -132,7 +229,7 @@ def collect_depthandrgb(cfg):
         print('Ps2_CloseDevice failed: ' + str(ret)) 
 
 def collect_emg(cfg, shared_emg_data, lock):
-    #ser = serial.Serial('COM13', 115200)  # Windows Serial port
+    ser = serial.Serial(cfg.SERIALPORT, cfg.BAUDRATE)  # Windows Serial port
     # ser = serial.Serial('/dev/ttyACM0', 115200)  # Linux/Mac Serial port
     ser_port = cfg.SERIALPORT
     baud_rate = cfg.BAUDRATE
@@ -219,6 +316,6 @@ def main(cfg):
 
 
 if __name__ == '__main__':
-    cfg, cfg_file = parse_args()
+    cfg, cfg_file = parse_args('a', 'b')
     cfg = prepare_output_dir(cfg)
     main(cfg)

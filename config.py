@@ -6,6 +6,7 @@ from yacs.config import CfgNode as CN
 DEPTH_DIR = 'depth'
 RGB_DIR = 'rgb'
 EMG_DIR = 'emg'
+LABEL_DIR = 'text'
 DATA_DIR = 'data'
 
 # Configuration variables
@@ -16,7 +17,7 @@ cfg.EMG = True
 cfg.FREQUENCY= 10  
 cfg.SUBJECT = 'TestP1'
 cfg.ACTION = 'TestA1'
-cfg.SERIALPORT = '/dev/ttyACM0'
+cfg.SERIALPORT = 'COM9'
 cfg.BAUDRATE = '115200'
 
 cfg.CMAERA = CN()
