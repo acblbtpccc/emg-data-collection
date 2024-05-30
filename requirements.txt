@@ -1,0 +1,6 @@
+flask
+pyserial
+websockets
+numpy
+opencv-python
+pip install yacs
