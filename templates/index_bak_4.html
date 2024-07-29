@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMG Data Collection</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <style>
+        body {
+            padding: 20px;
+        }
+        #emgChart {
+            max-height: 400px;
+        }
+        .form-group {
+            margin-right: 20px;
+        }
+        .btn-file {
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-file input[type=file] {
+            position: absolute;
+            top: 0;
+            right: 0;
+            min-width: 100%;
+            min-height: 100%;
+            font-size: 100px;
+            text-align: right;
+            filter: alpha(opacity=0);
+            opacity: 0;
+            outline: none;
+            background: white;
+            cursor: inherit;
+            display: block;
+        }
+        .btn-margin-right {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mb-4 text-center"> EMG and Depth Data Collection Control Panel</h1>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="h5">Control Panel</h2>
+            </div>
+            <div class="card-body">
+                <div class="form-inline mb-4">
+                    <div class="form-group">
+                        <label for="subjectName" class="mr-2">Subject Name</label>
+                        <input type="text" id="subjectName" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="action" class="mr-2">Action</label>
+                        <input type="text" id="action" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="pattern" class="mr-2">Description</label>
+                        <input type="text" id="pattern" class="form-control">
+                    </div>
+                </div>
+                <div class="form-inline mb-4">
+                    <button id="startSensorsButton" class="btn btn-primary btn-margin-right">Start Sensors</button>
+                    <button id="startButton" class="btn btn-success btn-margin-right">Start Collection</button>
+                    <button id="stopButton" class="btn btn-danger btn-margin-right">Stop Collection</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="h5">Visualization</h2>
+            </div>
+            <div class="card-body">
+                <canvas id="emgChart"></canvas>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="h5">Latest EMG Data</h2>
+            </div>
+            <div class="card-body">
+                <ul id="emgDataList" class="list-group mb-4"></ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            let emgChartCtx = document.getElementById('emgChart').getContext('2d');
+            let emgChart;
+
+            function initializeChart() {
+                emgChart = new Chart(emgChartCtx, {
+                    type: 'line',
+                    data: {
+                        labels: [],
+                        datasets: []
+                    },
+                    options: {
+                        scales: {
+                            x: {
+                                type: 'time',
+                                time: {
+                                    unit: 'second',
+                                    tooltipFormat: 'MM/dd/yyyy HH:mm:ss',
+                                    displayFormats: {
+                                        second: 'HH:mm:ss'
+                                    }
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Time'
+                                },
+                                min: new Date(new Date().getTime() - 5000),
+                                max: new Date()
+                            },
+                            y: {
+                                min: 0,
+                                max: 5000,
+                                title: {
+                                    display: true,
+                                    text: 'EMG Value'
+                                },
+                                ticks: {
+                                    stepSize: 500
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            initializeChart();
+
+            $('#startSensorsButton').click(function() {
+                $.ajax({
+                    url: '/start_sensors',
+                    method: 'GET',
+                    success: function(response) {
+                        alert(response.status);
+                        $.ajax({
+                            url: '/start_visual_emg',
+                            method: 'GET',
+                            success: function(response) {
+                                console.log(response.status);
+                            },
+                            error: function(xhr, status, error) {
+                                alert('Failed to visualization ' + error);
+                            }
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        alert('Failed to start sensors: ' + error);
+                    }
+                });
+            });
+
+            $('#startButton').click(function() {
+                let subjectName = $('#subjectName').val();
+                let action = $('#action').val();
+                let pattern = $('#pattern').val();
+
+                if (subjectName && action) {
+                    $.get('/start_collection', { subject: subjectName, action: action, pattern: pattern }, function(data) {
+                        alert(data.status);
+                    });
+                } else {
+                    alert("Please enter both subject name and action.");
+                }
+            });
+
+            $('#stopButton').click(function() {
+                $.get('/stop_collection', function(data) {
+                    alert(data.status);
+                });
+
+                $.ajax({
+                    url: '/start_visual_emg',
+                    method: 'GET',
+                    success: function(response) {
+                        console.log(response.status);
+                    },
+                    error: function(xhr, status, error) {
+                        alert('Failed to visualization ' + error);
+                    }
+                });
+            });
+
+            function fetchLatestEmgData() {
+                $.get('/latest_emg_data', function(data) {
+                    var $emgDataList = $('#emgDataList');
+                    $emgDataList.empty();
+                    let timestamps = [];
+                    let emgValues = {};
+                    let now = new Date();
+
+                    data.forEach(function(item) {
+                        var $li = $('<li>').addClass('list-group-item').text(item[0] + ": " + item[1] + " - " + item[2]);
+                        $emgDataList.append($li);
+
+                        let timestampStr_date = item[0].split('_')[0];
+                        let timestampStr_hour = item[0].split('_')[1];
+                        if (timestampStr_hour.includes('.')) {
+                            timestampStr_hour = timestampStr_hour.split('.')[0];
+                        }
+                        timestampStr_hour = timestampStr_hour.replace(/-/g, ':');
+                        let timestampStr =  timestampStr_date + ' ' + timestampStr_hour;
+                        let timestamp = new Date(timestampStr);
+
+                        if (now - timestamp <= 5000) {
+                            if (!emgValues[item[1]]) {
+                                emgValues[item[1]] = [];
+                            }
+                            emgValues[item[1]].push({ x: timestamp, y: parseFloat(item[2]) });
+                        }
+                    });
+
+                    emgChart.data.labels = Object.values(emgValues)[0].map(d => d.x);
+                    emgChart.data.datasets = Object.keys(emgValues).map((mac, index) => {
+                        return {
+                            label: `EMG Data (${mac})`,
+                            data: emgValues[mac],
+                            borderColor: `rgba(${index * 50 % 255}, ${(index * 100) % 255}, ${(index * 150) % 255}, 1)`,
+                            borderWidth: 2,
+                            fill: false
+                        };
+                    });
+                    emgChart.options.scales.x.min = new Date(now.getTime() - 5000);
+                    emgChart.options.scales.x.max = now;
+                    emgChart.update();
+                });
+            }
+
+            setInterval(fetchLatestEmgData, 50);
+        });
+    </script>
+</body>
+</html>
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMG Data Collection</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <style>
+        body {
+            padding: 20px;
+        }
+        #emgChart {
+            max-height: 400px;
+        }
+        .form-group {
+            margin-right: 20px;
+        }
+        .btn-file {
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-file input[type=file] {
+            position: absolute;
+            top: 0;
+            right: 0;
+            min-width: 100%;
+            min-height: 100%;
+            font-size: 100px;
+            text-align: right;
+            filter: alpha(opacity=0);
+            opacity: 0;
+            outline: none;
+            background: white;
+            cursor: inherit;
+            display: block;
+        }
+        .btn-margin-right {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mb-4 text-center"> EMG and Depth Data Collection Control Panel</h1>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="h5">Control Panel</h2>
+            </div>
+            <div class="card-body">
+                <div class="form-inline mb-4">
+                    <div class="form-group">
+                        <label for="subjectName" class="mr-2">Subject Name</label>
+                        <input type="text" id="subjectName" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="action" class="mr-2">Action</label>
+                        <input type="text" id="action" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="pattern" class="mr-2">Description</label>
+                        <input type="text" id="pattern" class="form-control">
+                    </div>
+                </div>
+                <div class="form-inline mb-4">
+                    <button id="startSensorsButton" class="btn btn-primary btn-margin-right">Start Sensors</button>
+                    <button id="startButton" class="btn btn-success btn-margin-right">Start Collection</button>
+                    <button id="stopButton" class="btn btn-danger btn-margin-right">Stop Collection</button>
+                    <!-- <div class="btn btn-primary btn-file">
+                        Select Video File <input type="file" id="videoFile" accept="video/*">
+                    </div> -->
+                </div>
+            </div>
+        </div>
+
+        <!-- <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="h5">Video Playback</h2>
+            </div>
+            <div class="card-body">
+                <video id="videoPlayer" width="100%" controls>
+                    <source id="videoSource" src="" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </div> -->
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="h5">Visualization</h2>
+            </div>
+            <div class="card-body">
+                <canvas id="emgChart"></canvas>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="h5">Latest EMG Data</h2>
+            </div>
+            <div class="card-body">
+                <ul id="emgDataList" class="list-group mb-4"></ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            let emgChartCtx = document.getElementById('emgChart').getContext('2d');
+
+            // Initialize the chart with two datasets for EMG data
+            let emgChart = new Chart(emgChartCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'EMG Data 1',
+                        data: [],
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 2,
+                        fill: false
+                    }, {
+                        label: 'EMG Data 2',
+                        data: [],
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 2,
+                        fill: false
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'second',
+                                tooltipFormat: 'MM/dd/yyyy HH:mm:ss',
+                                displayFormats: {
+                                    second: 'HH:mm:ss'
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Time'
+                            },
+                            min: new Date(new Date().getTime() - 2000),
+                            max: new Date()
+                        },
+                        y: {
+                            min: 0,
+                            max: 80,
+                            title: {
+                                display: true,
+                                text: 'EMG Value'
+                            },
+                            ticks: {
+                                stepSize: 10 // Adjust the step size as needed for even intervals
+                            }
+                        }
+                    }
+                }
+            });
+
+            $('#startSensorsButton').click(function() {
+                $.ajax({
+                    url: '/start_sensors',
+                    method: 'GET',
+                    success: function(response) {
+                        alert(response.status);
+                        $.ajax({
+                            url: '/start_visual_emg',
+                            method: 'GET',
+                            success: function(response) {
+                                console.log(response.status);
+                            },
+                            error: function(xhr, status, error) {
+                                alert('Failed to visualization ' + error);
+                            }
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        alert('Failed to start sensors: ' + error);
+                    }
+                });
+
+                
+            });
+
+            $('#startButton').click(function() {
+                let subjectName = $('#subjectName').val();
+                let action = $('#action').val();
+                let pattern = $('#pattern').val();
+
+                if (subjectName && action) {
+                    $.get('/start_collection', { subject: subjectName, action: action, pattern: pattern }, function(data) {
+                        alert(data.status);
+                    });
+                } else {
+                    alert("Please enter both subject name and action.");
+                }
+            });
+
+            $('#stopButton').click(function() {
+                $.get('/stop_collection', function(data) {
+                    alert(data.status);
+                });
+
+                $.ajax({
+                    url: '/start_visual_emg',
+                    method: 'GET',
+                    success: function(response) {
+                        console.log(response.status);
+                    },
+                    error: function(xhr, status, error) {
+                        alert('Failed to visualization ' + error);
+                    }
+                });
+            });
+
+            // Video file selection and playback
+            $('#videoFile').change(function(event) {
+                let file = event.target.files[0];
+                let videoPlayer = document.getElementById('videoPlayer');
+                let videoSource = document.getElementById('videoSource');
+
+                if (file) {
+                    let fileURL = URL.createObjectURL(file);
+                    videoSource.src = fileURL;
+                    videoPlayer.load();
+                    videoPlayer.play();
+                }
+            }); 
+            
+            // debug depth commented
+            function fetchLatestEmgData() {
+                $.get('/latest_emg_data', function(data) {
+                    var $emgDataList = $('#emgDataList');
+                    $emgDataList.empty();
+                    let timestamps = [];
+                    let emgValues1 = [];
+                    let emgValues2 = [];
+                    let now = new Date();
+
+
+                    data.forEach(function(item) {
+                        var $li = $('<li>').addClass('list-group-item').text(item[0] + ": " + item[1]);
+                        $emgDataList.append($li);
+
+                        // Preprocess the timestamp string to a format that can be parsed by JavaScript Date
+                        let timestampStr_date = item[0].split('_')[0];
+                        let timestampStr_hour = item[0].split('_')[1];
+                        // let timestampStr = item[0].replace('_', ' ');
+                        // Keep only milliseconds
+                        let timestampStr;
+
+                        if (timestampStr_hour.includes('.')) {
+                            // timestampStr = timestampStr.split('.')[0] + '.' + timestampStr.split('.')[1].substring(0, 3);
+                            timestampStr_hour = timestampStr_hour.split('.')[0];
+                        }
+                        timestampStr_hour = timestampStr_hour.replace(/-/g, ':');
+                        timestampStr =  timestampStr_date + ' ' + timestampStr_hour;
+
+                        let timestamp = new Date(timestampStr);
+
+                        if (now - timestamp <= 3000) {
+                            timestamps.push(timestamp);
+                            let emgValues = item[1].split(',').map(parseFloat);
+                            emgValues1.push({ x: timestamp, y: emgValues[0] });
+                            emgValues2.push({ x: timestamp, y: emgValues[1] });
+                        }
+                    });
+
+                    emgChart.data.labels = timestamps;
+                    emgChart.data.datasets[0].data = emgValues1;
+                    emgChart.data.datasets[1].data = emgValues2;
+                    emgChart.options.scales.x.min = new Date(now.getTime() - 3000);
+                    emgChart.options.scales.x.max = now;
+                    emgChart.update();
+                });
+            }
+
+            // Fetch the latest EMG data every 5 seconds
+            setInterval(fetchLatestEmgData, 50);
+        });
+    </script>
+</body>
+</html>
+

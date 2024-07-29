@@ -4,3 +4,4 @@ websockets
 numpy
 opencv-python
 yacs
+flask_socketio

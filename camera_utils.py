@@ -1,4 +1,4 @@
-from API.Vzense_api_710 import *
+from DCAM710.API.Vzense_api_710_aiot_modified import *
 import datetime, time
 
 def init_camera():

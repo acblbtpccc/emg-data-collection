@@ -1,10 +1,11 @@
+import json
 import asyncio
 import websockets
 import serial
 import csv
 import datetime, time
 import os
-from API.Vzense_api_710 import *
+from DCAM710.API.Vzense_api_710_aiot_modified import *
 import cv2
 import numpy as np
 import threading
@@ -62,8 +63,8 @@ def save_depthandrgb_web(cfg, camera, stop_event, current_sec):
                 print("Ps2_ReadNextFrame failed:",ret)
                 time.sleep(1)
 
-            if frameready.mappedDepth:
-                ret, depthframe = camera.Ps2_GetFrame(PsFrameType.PsMappedDepthFrame)     # (480, 640)
+            if frameready.depth:
+                ret, depthframe = camera.Ps2_GetFrame(PsFrameType.PsDepthFrame)     # (480, 640)
                 if ret == 0:
                     frametmp = np.ctypeslib.as_array(depthframe.pFrameData, (1, depthframe.width * depthframe.height * 2))
                     frametmp.dtype = np.uint16
@@ -95,12 +96,11 @@ def save_depthandrgb_web(cfg, camera, stop_event, current_sec):
         vout_rgb.release()
 
  
-def save_emg_web(cfg, emg_serial, stop_event, current_sec):
+def save_emg_web(cfg, emg_serial, stop_event, current_sec, shared_emg_data):
     print("stop_event: ", stop_event)
 
     emg_path = ''
     header = ['timestamp', 'EMG']
-    # current_sec = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     emg_path = os.path.join(cfg.emg_dir, current_sec+'.csv')
     with open(emg_path, 'a') as emg_data:
         writer = csv.writer(emg_data)
@@ -108,11 +108,28 @@ def save_emg_web(cfg, emg_serial, stop_event, current_sec):
     try:
         while not stop_event.is_set():
             if emg_serial.in_waiting > 0:
-                line = emg_serial.readline().decode().strip()  
+                line = emg_serial.readline().decode().strip()
                 timestamp = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S.%f')
-                with open(emg_path, "a") as emg_data:
-                    writer = csv.writer(emg_data)
-                    writer.writerow([timestamp, line])
+
+                # Parse the JSON data
+                try:
+                    emg_entries = json.loads(line)
+                    for entry in emg_entries:
+                        mac = entry['mac']
+                        value = entry['value']
+
+                        # Log EMG data
+                        with open(emg_path, "a") as emg_data:
+                            writer = csv.writer(emg_data)
+                            writer.writerow([timestamp, mac, value])
+                        
+                        shared_emg_data.append((timestamp, mac, value))
+                        print(f"Collected data from {mac}: {value}")
+
+                        if len(shared_emg_data) > 50:  # Keep only the last 50 EMG data points
+                            shared_emg_data.pop(0)
+                except json.JSONDecodeError:
+                    print(f"Failed to decode JSON: {line}")
 
     finally:
         print("EMGs {:s} has been writen!".format(emg_path))

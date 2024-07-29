@@ -1,20 +1,30 @@
 #collect_data_web.py
 from flask import Flask, request, render_template, jsonify
+import json
+import logging
 import threading
 import serial
 import time
 from collect_data_all import prepare_output_dir, collect_depthandrgb, collect_emg, parse_args, save_depthandrgb_web, save_emg_web
 from config import parse_args, parse_args_sensors, DEPTH_DIR, RGB_DIR, EMG_DIR, DATA_DIR
 from camera_utils import init_camera, set_datamode, set_resolution, set_mapper, set_range
-from API.Vzense_api_710 import *
+from DCAM710.API.Vzense_api_710_aiot_modified import *
 from serial.serialutil import SerialException
 import subprocess
 import datetime
+from flask_socketio import SocketIO, emit
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'secret!'
+socketio = SocketIO(app)
+# Set the log level to WARNING to suppress INFO messages
+logging.getLogger('werkzeug').setLevel(logging.WARNING)
+
+
 threads = []
 emg_data = []
 emg_lock = threading.Lock()
+emg_serial = None
 
 # Flag to indicate if data collection is running
 is_collecting = {"depth_and_rgb": False, "emg": False}
@@ -65,10 +75,10 @@ def start_sensors():
         set_resolution(camera, resol='PsRGB_Resolution_640_480')  
 
         # mapping RGB image to depth camera space
-        set_mapper(camera, mapper='r2d') 
+        # set_mapper(camera, mapper='r2d') 
 
         # set depth range: near, mid, far
-        set_range(camera, range='mid')
+        set_range(camera, range='far')
 
         return camera
 
@@ -85,9 +95,9 @@ def start_sensors():
         ser = open_serial_port()
         return ser
     
-    
-    cfg, _ = parse_args_sensors()
 
+    # start depth camera
+    cfg, _ = parse_args_sensors()
     camera = start_depth(cfg)
     time.sleep(1)
 
@@ -105,19 +115,48 @@ def start_sensors():
     if depth_ret != 0:
         print("Depth camera not connected.")
         return jsonify({"status": "Depth No Data Read Out"}), 500
-        
+    
+    # start emg sensors
     emg_serial = start_emg(cfg)
-    if emg_serial.in_waiting > 0:
-        line = emg_serial.readline().decode().strip()
-        if line == 0:
-            return jsonify({"status": "Serial No Data Read Out"}), 500
-        
+    
+            # if line == 0:
+            #     return jsonify({"status": "Serial No Data Read Out"}), 500
+            
     return jsonify({"status": "Sensors started successfully"}), 200
+
+
+@app.route('/start_visual_emg')
+def start_visual_emg():
+    global emg_serial
+    stop_events["emg"].set()
+    while stop_events["emg"].is_set():
+        if emg_serial.in_waiting > 0:
+            line = emg_serial.readline().decode().strip()
+            print("auto read serial data: ", line)
+            try:
+                data_list = json.loads(line)
+                for data in data_list:
+                    timestamp = data['timestamp']
+                    mac = data['mac']
+                    value = data['value']
+                    emg_data.append((timestamp, mac, value))
+                    socketio.emit('emg_data', {'timestamp': timestamp, 'mac': mac, 'value': value})
+                    
+                if len(emg_data) > 1500:  # Keep only the last 1500 EMG data points
+                    emg_data.pop(0)
+            except json.JSONDecodeError as e:
+                print(f"Failed to decode JSON: {e}")
+            except KeyError as e:
+                print(f"Missing key in JSON data: {e}")
+
+    return jsonify({"status": "Start Visualization"}), 200
+
 
 @app.route('/start_collection')
 def start_collection():
     global threads
-
+    global emg_serial
+    
     subject = request.args.get('subject')
     action = request.args.get('action')
     pattern = request.args.get('pattern')
@@ -145,7 +184,7 @@ def start_collection():
     if not is_collecting["emg"]:
         is_collecting["emg"] = True
         stop_events["emg"].clear()
-        thread2 = threading.Thread(target=save_emg_web, args=(cfg, emg_serial, stop_events["emg"], current_sec))
+        thread2 = threading.Thread(target=save_emg_web, args=(cfg, emg_serial, stop_events["emg"], current_sec, emg_data))
         thread2.start()
         threads.append(thread2)
 
@@ -168,12 +207,14 @@ def stop_collection():
     threads.clear()   
     return jsonify({"status": "Data collection stopped"})
 
+# former code for front end fetch data from backend, now using websocket
 # @app.route('/latest_emg_data')
 # def latest_emg_data():
-#     with emg_lock:
-#         # Return the last 10 EMG data points, formatted as a list of tuples
-#         print("[Debug] emg_data:", emg_data)
-#         return jsonify([(item[0], item[1]) for item in emg_data[-50:]])
+#     if emg_data:
+#         latest_data = emg_data[-1]
+#         return jsonify({"timestamp": latest_data[0], "mac": latest_data[1], "value": latest_data[2]})
+#     else:
+#         return jsonify({}), 200
     
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    socketio.run(app, host='0.0.0.0', port=5000, debug=False)

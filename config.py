@@ -17,7 +17,7 @@ cfg.EMG = True
 cfg.FREQUENCY= 10  
 cfg.SUBJECT = 'TestP1'
 cfg.ACTION = 'TestA1'
-cfg.SERIALPORT = 'COM9'
+cfg.SERIALPORT = '/dev/ttyUSB0'
 cfg.BAUDRATE = '115200'
 
 cfg.CMAERA = CN()
