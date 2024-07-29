@@ -98,23 +98,23 @@ def start_sensors():
 
     # start depth camera
     cfg, _ = parse_args_sensors()
-    camera = start_depth(cfg)
-    time.sleep(1)
+    # camera = start_depth(cfg)
+    # time.sleep(1)
 
-    read_try_times = 100
-    while read_try_times > 0:
-        depth_ret, _ = camera.Ps2_ReadNextFrame()
-        if depth_ret != 0:
-            print("Ps2_ReadNextFrame failed:", depth_ret, read_try_times)
-        if depth_ret == 0:
-            print("Ps2_ReadNextFrame successful")
-            break
-        read_try_times -= 1
-        time.sleep(1)
+    # read_try_times = 100
+    # while read_try_times > 0:
+    #     depth_ret, _ = camera.Ps2_ReadNextFrame()
+    #     if depth_ret != 0:
+    #         print("Ps2_ReadNextFrame failed:", depth_ret, read_try_times)
+    #     if depth_ret == 0:
+    #         print("Ps2_ReadNextFrame successful")
+    #         break
+    #     read_try_times -= 1
+    #     time.sleep(1)
 
-    if depth_ret != 0:
-        print("Depth camera not connected.")
-        return jsonify({"status": "Depth No Data Read Out"}), 500
+    # if depth_ret != 0:
+    #     print("Depth camera not connected.")
+    #     return jsonify({"status": "Depth No Data Read Out"}), 500
     
     # start emg sensors
     emg_serial = start_emg(cfg)
@@ -217,4 +217,4 @@ def stop_collection():
 #         return jsonify({}), 200
     
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=5000, debug=False)
+    socketio.run(app, host='0.0.0.0', port=5001, debug=False)
