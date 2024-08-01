@@ -20,9 +20,13 @@ class VzenseTofCam():
                 raise Exception(f"Unsupported architecture: {arch}")
             print(libpath)
             self.ps_cam_lib = cdll.LoadLibrary(libpath)
-        # elif platform.system() == 'Windows':          
+        if platform.system() == 'Windows':          
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            os.environ['path'] += os.path.join(script_dir, "Lib-x86-win")
+            libpath = os.path.join(script_dir, "Lib-x86-win", "vzense_api.dll")
+            self.ps_cam_lib = cdll.LoadLibrary(libpath)   
         #     lib_name = "../../Lib/"
-        #     lib_path = os.path.dirname(os.path.abspath(__file__)) + os.path.sep + lib_name
+            # lib_path = os.path.dirname(os.path.abspath(__file__)) + os.path.sep + lib_name
         #     lib_path = ';'+lib_path
         #     os.environ['path']+= lib_path
             

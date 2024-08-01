@@ -1,3 +1,5 @@
+import cProfile
+import pstats
 #collect_data_web.py
 from flask import Flask, request, render_template, jsonify
 import json
@@ -13,6 +15,7 @@ from serial.serialutil import SerialException
 import subprocess
 import datetime
 from flask_socketio import SocketIO, emit
+import queue
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
@@ -23,7 +26,8 @@ logging.getLogger('werkzeug').setLevel(logging.WARNING)
 
 
 threads = []
-emg_data = []
+# emg_data = []
+emg_queue = queue.Queue()
 emg_lock = threading.Lock()
 emg_serial = None
 
@@ -143,15 +147,17 @@ def start_visual_emg():
                         timestamp = data['timestamp']
                         mac = data['mac']
                         value = data['value']
-                        emg_data.append((timestamp, mac, value))
+                        # emg_data.append((timestamp, mac, value))
+                        emg_queue.put((timestamp, mac, value))
                         frequency_limiter_count += 1  
                         if frequency_limiter_count % 5 == 0:  
+                            
                             socketio.emit('emg_data', {'timestamp': timestamp, 'mac': mac, 'value': value})
                             logger.debug(f"EMG data sent to client: {timestamp}, {mac}, {value}")
                         
-                    if len(emg_data) > 1500:  
-                        emg_data.pop(0)
-                        logger.debug(f"Over 1500 EMG data points, pop the oldest one")
+                    # if len(emg_data) > 1500:  
+                    #     emg_data.pop(0)
+                    #     logger.debug(f"Over 1500 EMG data points, pop the oldest one")
 
                 except json.JSONDecodeError as e:
                     logger.error(f"Failed to decode JSON: {e}")
@@ -197,7 +203,7 @@ def start_collection():
     if not is_collecting["emg"]:
         is_collecting["emg"] = True
         stop_events["emg"].clear()
-        thread2 = threading.Thread(target=save_emg_web, args=(cfg, stop_events["emg"], current_sec, emg_data))
+        thread2 = threading.Thread(target=save_emg_web, args=(cfg, stop_events["emg"], current_sec, emg_queue))
         thread2.start()
         threads.append(thread2)
         logger.info(f"save_emg_web thread collection")
@@ -231,4 +237,9 @@ def stop_collection():
 #         return jsonify({}), 200
     
 if __name__ == '__main__':
+    profiler = cProfile.Profile()
+    profiler.enable()
     socketio.run(app, host='0.0.0.0', port=5002, debug=False)
+    profiler.disable()
+    stats = pstats.Stats(profiler)
+    stats.sort_stats('cumulative').print_stats(10)

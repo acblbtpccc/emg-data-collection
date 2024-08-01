@@ -13,6 +13,7 @@ from config import parse_args, DEPTH_DIR, RGB_DIR, EMG_DIR, DATA_DIR, LABEL_DIR
 from camera_utils import init_camera, set_datamode, set_resolution, set_mapper, set_range
 from serial.serialutil import SerialException
 from collect_logger import logger
+import queue
 
 def prepare_output_dir(cfg):
     base_path = f"./{DATA_DIR}/{cfg.SUBJECT}/{cfg.ACTION}"
@@ -97,40 +98,87 @@ def save_depthandrgb_web(cfg, camera, stop_event, current_sec):
         vout_rgb.release()
 
  
-def save_emg_web(cfg, stop_event, current_sec, shared_emg_data):
-    logger.debug(f"stop_event: {stop_event}", )
+def save_emg_web(cfg, stop_event, current_sec, emg_queue):
+    logger.debug(f"stop_event: {stop_event}")
 
-    emg_path = ''
+    emg_path = os.path.join(cfg.emg_dir, current_sec + '.csv')
     header = ['timestamp', 'mac_address', 'emg_value']
-    emg_path = os.path.join(cfg.emg_dir, current_sec+'.csv')
-    with open(emg_path, 'a') as emg_data:
-        writer = csv.writer(emg_data)
-        writer.writerow(header)  
-    try:
-        while not stop_event.is_set():
-            logger.debug(f"stop_event: {stop_event}", )
-            # 从shared_emg_data中获取数据并保存
-            while shared_emg_data:
-                try:
-                    timestamp, mac, value = shared_emg_data.pop(0)
-                    # Log EMG data
-                    with open(emg_path, "a") as emg_data:
-                        writer = csv.writer(emg_data)
-                        writer.writerow([timestamp, mac, value])
-                    
-                    logger.debug(f"Collected data from {mac}: {value}")
 
-                    if len(shared_emg_data) > 1500:  # Keep only the last 50 EMG data points
-                        shared_emg_data.pop(0)
-                except KeyError as e:
-                    logger.error(f"Missing key in shared EMG data: {e}")
-                    continue
+    with open(emg_path, 'a', newline='') as emg_data:
+        writer = csv.writer(emg_data)
+        writer.writerow(header)
+
+    try:
+        batch_size = 150
+        buffer = []
+
+        while not stop_event.is_set():
+            logger.debug(f"stop_event: {stop_event}")
+            
+            try:
+                timestamp, mac, value = emg_queue.get(timeout=1)
+                buffer.append([timestamp, mac, value])
+                logger.debug(f"{timestamp}: {mac}: {value}")
+                
+                # 当缓冲区达到批量大小时写入文件
+                if len(buffer) >= batch_size:
+                    with open(emg_path, 'a', newline='') as emg_data:
+                        writer = csv.writer(emg_data)
+                        writer.writerows(buffer)
+                    buffer.clear()
+
+            except queue.Empty:
+                continue
+            except KeyError as e:
+                logger.error(f"Missing key in shared EMG data: {e}")
+                continue
             logger.debug("save_emg_web one loop finished")
+
+        # 在退出之前将剩余的数据写入文件
+        if buffer:
+            with open(emg_path, 'a', newline='') as emg_data:
+                writer = csv.writer(emg_data)
+                writer.writerows(buffer)
 
     except Exception as e:
         logger.error(f"An error occurred while saving EMG data: {e}")
     finally:
-        logger.error("EMGs {:s} has been written!".format(emg_path))
+        logger.error(f"EMGs {emg_path} has been written!")
+
+# def save_emg_web(cfg, stop_event, current_sec, shared_emg_data):
+#     logger.debug(f"stop_event: {stop_event}", )
+
+#     emg_path = ''
+#     header = ['timestamp', 'mac_address', 'emg_value']
+#     emg_path = os.path.join(cfg.emg_dir, current_sec+'.csv')
+#     with open(emg_path, 'a') as emg_data:
+#         writer = csv.writer(emg_data)
+#         writer.writerow(header)  
+#     try:
+#         while not stop_event.is_set():
+#             logger.debug(f"stop_event: {stop_event}", )
+#             # 从shared_emg_data中获取数据并保存
+#             while shared_emg_data:
+#                 try:
+#                     timestamp, mac, value = shared_emg_data.pop(0)
+#                     # Log EMG data
+#                     with open(emg_path, "a") as emg_data:
+#                         writer = csv.writer(emg_data)
+#                         writer.writerow([timestamp, mac, value])
+                    
+#                     logger.debug(f"Collected data from {mac}: {value}")
+
+#                     if len(shared_emg_data) > 1500:  # Keep only the last 50 EMG data points
+#                         shared_emg_data.pop(0)
+#                 except KeyError as e:
+#                     logger.error(f"Missing key in shared EMG data: {e}")
+#                     continue
+#             logger.debug("save_emg_web one loop finished")
+
+#     except Exception as e:
+#         logger.error(f"An error occurred while saving EMG data: {e}")
+#     finally:
+#         logger.error("EMGs {:s} has been written!".format(emg_path))
 
 
 def collect_depthandrgb(cfg, camera):
