@@ -12,6 +12,7 @@ import threading
 from config import parse_args, DEPTH_DIR, RGB_DIR, EMG_DIR, DATA_DIR, LABEL_DIR
 from camera_utils import init_camera, set_datamode, set_resolution, set_mapper, set_range
 from serial.serialutil import SerialException
+from collect_logger import logger
 
 def prepare_output_dir(cfg):
     base_path = f"./{DATA_DIR}/{cfg.SUBJECT}/{cfg.ACTION}"
@@ -96,44 +97,40 @@ def save_depthandrgb_web(cfg, camera, stop_event, current_sec):
         vout_rgb.release()
 
  
-def save_emg_web(cfg, emg_serial, stop_event, current_sec, shared_emg_data):
-    print("stop_event: ", stop_event)
+def save_emg_web(cfg, stop_event, current_sec, shared_emg_data):
+    logger.debug(f"stop_event: {stop_event}", )
 
     emg_path = ''
-    header = ['timestamp', 'EMG']
+    header = ['timestamp', 'mac_address', 'emg_value']
     emg_path = os.path.join(cfg.emg_dir, current_sec+'.csv')
     with open(emg_path, 'a') as emg_data:
         writer = csv.writer(emg_data)
         writer.writerow(header)  
     try:
         while not stop_event.is_set():
-            if emg_serial.in_waiting > 0:
-                line = emg_serial.readline().decode().strip()
-                timestamp = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S.%f')
-
-                # Parse the JSON data
+            logger.debug(f"stop_event: {stop_event}", )
+            # 从shared_emg_data中获取数据并保存
+            while shared_emg_data:
                 try:
-                    emg_entries = json.loads(line)
-                    for entry in emg_entries:
-                        mac = entry['mac']
-                        value = entry['value']
+                    timestamp, mac, value = shared_emg_data.pop(0)
+                    # Log EMG data
+                    with open(emg_path, "a") as emg_data:
+                        writer = csv.writer(emg_data)
+                        writer.writerow([timestamp, mac, value])
+                    
+                    logger.debug(f"Collected data from {mac}: {value}")
 
-                        # Log EMG data
-                        with open(emg_path, "a") as emg_data:
-                            writer = csv.writer(emg_data)
-                            writer.writerow([timestamp, mac, value])
-                        
-                        shared_emg_data.append((timestamp, mac, value))
-                        print(f"Collected data from {mac}: {value}")
+                    if len(shared_emg_data) > 1500:  # Keep only the last 50 EMG data points
+                        shared_emg_data.pop(0)
+                except KeyError as e:
+                    logger.error(f"Missing key in shared EMG data: {e}")
+                    continue
+            logger.debug("save_emg_web one loop finished")
 
-                        if len(shared_emg_data) > 50:  # Keep only the last 50 EMG data points
-                            shared_emg_data.pop(0)
-                except json.JSONDecodeError:
-                    print(f"Failed to decode JSON: {line}")
-
+    except Exception as e:
+        logger.error(f"An error occurred while saving EMG data: {e}")
     finally:
-        print("EMGs {:s} has been writen!".format(emg_path))
-
+        logger.error("EMGs {:s} has been written!".format(emg_path))
 
 
 def collect_depthandrgb(cfg, camera):

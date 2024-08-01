@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMG Data Collection</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.0.0/dist/echarts.min.js"></script>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <style>
+        body {
+            padding: 20px;
+        }
+        #emgChart {
+            width: 100%;
+            height: 400px;
+        }
+        .form-group {
+            margin-right: 20px;
+        }
+        .btn-file {
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-file input[type=file] {
+            position: absolute;
+            top: 0;
+            right: 0;
+            min-width: 100%;
+            min-height: 100%;
+            font-size: 100px;
+            text-align: right;
+            filter: alpha(opacity=0);
+            opacity: 0;
+            outline: none;
+            background: white;
+            cursor: inherit;
+            display: block;
+        }
+        .btn-margin-right {
+            margin-right: 10px;
+        }
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
+        }
+        #livekitVideo {
+            width: 100%;
+            height: 400px;
+            background: black;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mb-4 text-center">EMG and Depth Data Collection Control Panel</h1>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="h5">Control Panel</h2>
+            </div>
+            <div class="card-body">
+                <div class="form-inline mb-4">
+                    <div class="form-group">
+                        <label for="subjectName" class="mr-2">Subject Name</label>
+                        <input type="text" id="subjectName" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="action" class="mr-2">Action</label>
+                        <input type="text" id="action" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="pattern" class="mr-2">Description</label>
+                        <input type="text" id="pattern" class="form-control">
+                    </div>
+                </div>
+                <div class="form-inline mb-4">
+                    <button id="startSensorsButton" class="btn btn-primary btn-margin-right">Start Sensors</button>
+                    <button id="startButton" class="btn btn-success btn-margin-right">Start Collection</button>
+                    <button id="stopButton" class="btn btn-danger btn-margin-right">Stop Collection</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="h5">Visualization</h2>
+            </div>
+            <div class="card-body">
+                <div id="emgChart"></div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="h5">Live Video Stream</h2>
+            </div>
+            <div class="card-body">
+                <div id="livekitVideo"></div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="h5">Websocket Buffer</h2>
+            </div>
+            <div class="card-body">
+                <div id="bufferedAmount" class="alert alert-info"></div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="h5">Latest EMG Data</h2>
+            </div>
+            <div class="card-body">
+                <ul id="emgDataList" class="list-group mb-4"></ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/livekit-client/dist/livekit-client.umd.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Initialize ECharts instance
+            let emgChart = echarts.init(document.getElementById('emgChart'));
+
+            // Initialize chart options and data
+            let option = {
+                title: {
+                    text: 'Real-time EMG Data'
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    formatter: function (params) {
+                        params = params[0];
+                        let date = new Date(params.value[0]);
+                        return date.toLocaleTimeString() + ' : ' + params.value[1];
+                    },
+                    axisPointer: {
+                        animation: false
+                    }
+                },
+                xAxis: {
+                    type: 'time',
+                    splitLine: {
+                        show: false
+                    },
+                    axisLabel: {
+                        formatter: function(value) {
+                            let date = new Date(value);
+                            return date.toLocaleTimeString();
+                        }
+                    }
+                },
+                yAxis: {
+                    type: 'value',
+                    min: 0,
+                    max: 4000,
+                    splitLine: {
+                        show: false
+                    }
+                },
+                series: []
+            };
+            emgChart.setOption(option);
+
+            $('#startSensorsButton').click(function() {
+                // LiveKit video setup
+                let livekitRoom = new Room();
+                livekitRoom.connect('wss://lk-hk01.1f2.net', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjI1NzE1MTQsImlzcyI6IkFQSU04OW9oWGEzQzVUTiIsIm5hbWUiOiJlbWctZGF0YS1jb2xsZWN0aW9uIiwibmJmIjoxNzIyNDg1MTE0LCJzdWIiOiJlbWctZGF0YS1jb2xsZWN0aW9uIiwidmlkZW8iOnsicm9vbSI6ImV4YW1wbGUtcm9vbSIsInJvb21Kb2luIjp0cnVlfX0.1gwVpVz_dAbQQRe8zlvzUdoD7BJSTulZh13SL9ipL1Q',
+                ).then(room => {
+                    room.on(LiveKit.RoomEvent.TrackSubscribed, handleTrackSubscribed);
+                }).catch(error => {
+                    showToast('Failed to connect to LiveKit: ' + error.message, 'danger');
+                });
+
+                function handleTrackSubscribed(track, publication, participant) {
+                    const element = track.attach();
+                    document.getElementById('livekitVideo').appendChild(element);
+                }
+                $.ajax({
+                    url: '/start_sensors',
+                    method: 'GET',
+                    success: function(response) {
+                        showToast(response.status, 'success');
+                        $.ajax({
+                            url: '/start_visual_emg',
+                            method: 'GET',
+                            success: function(response) {
+                                console.log(response.status);
+                            },
+                            error: function(xhr, status, error) {
+                                showToast('Failed to visualize: ' + error, 'danger');
+                            }
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        showToast('Failed to start sensors: ' + error, 'danger');
+                    }
+                });
+            });
+
+            $('#startButton').click(function() {
+                let subjectName = $('#subjectName').val();
+                let action = $('#action').val();
+                let pattern = $('#pattern').val();
+
+                if (subjectName && action) {
+                    $.get('/start_collection', { subject: subjectName, action: action, pattern: pattern }, function(data) {
+                        showToast(data.status, 'success');
+                    });
+                } else {
+                    showToast("Please enter both subject name and action.", 'warning');
+                }
+            });
+
+            $('#stopButton').click(function() {
+                $.get('/stop_collection', function(data) {
+                    showToast(data.status, 'success');
+                    location.reload(); // Refresh the page after stopping collection
+                });
+            });
+
+            // Connect to the server's WebSocket
+            let socket = io.connect('http://' + document.domain + ':' + location.port);
+
+            socket.on('connect', function() {
+                console.log('WebSocket connected');
+            });
+
+            socket.on('disconnect', function() {
+                console.log('WebSocket disconnected');
+            });
+
+            let emgValues = {};
+            const MAX_TIME_DIFF = 10000; // 10 seconds
+
+            socket.on('emg_data', function(data) {
+                let timestamp = new Date(data.timestamp);
+                let macAddress = data.mac;
+                let emgValue = parseFloat(data.value);
+                let source = data.source || macAddress;
+                let now = new Date();
+
+                if (!emgValues[source]) {
+                    emgValues[source] = [];
+                }
+                let queue = emgValues[source];
+                queue.push([timestamp, emgValue]);
+
+                while (queue.length > 0 && timestamp - queue[0][0] > MAX_TIME_DIFF) {
+                    queue.shift();
+                }
+
+                let series = Object.keys(emgValues).map((src) => {
+                    return {
+                        name: `Biceps (${src})`,
+                        type: 'line',
+                        data: emgValues[src],
+                        sampling: 'lttb',
+                        symbol: 'none'
+                    };
+                });
+
+                let legendData = Object.keys(emgValues).map(src => `Biceps (${src})`);
+
+                emgChart.setOption({
+                    legend: {
+                        data: legendData
+                    },
+                    series: series,
+                    xAxis: {
+                        min: new Date(timestamp.getTime() - MAX_TIME_DIFF), // Show data from the past 10 seconds
+                        max: timestamp, 
+                    }
+                });
+
+                updateBufferedAmount();
+            });
+
+            function updateBufferedAmount() {
+                let transport = socket.io.engine.transport;
+                if (transport && transport.name === 'websocket') {
+                    let ws = transport.ws;
+                    if (ws) {
+                        let bufferedAmount = ws.bufferedAmount;
+                        document.getElementById('bufferedAmount').textContent = `Buffered Amount: ${bufferedAmount} bytes`;
+                    } else {
+                        document.getElementById('bufferedAmount').textContent = 'Buffered Amount: WebSocket instance not found';
+                        console.log('WebSocket instance not found');
+                    }
+                } else {
+                    document.getElementById('bufferedAmount').textContent = 'Buffered Amount: WebSocket transport not available';
+                    console.log('WebSocket transport not available');
+                }
+            }
+
+            function showToast(message, type) {
+                let toastId = 'toast-' + Date.now();
+                let toastHtml = `
+                    <div id="${toastId}" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000">
+                        <div class="toast-header">
+                            <strong class="mr-auto">${type.charAt(0).toUpperCase() + type.slice(1)}</strong>
+                            <small class="text-muted">Just now</small>
+                            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="toast-body">
+                            ${message}
+                        </div>
+                    </div>
+                `;
+                $('#toast-container').append(toastHtml);
+                $('#' + toastId).toast('show').on('hidden.bs.toast', function () {
+                    $(this).remove();
+                });
+            }
+
+            // Periodically check WebSocket buffer status
+            setInterval(updateBufferedAmount, 1000);
+
+            
+        });
+    </script>
+</body>
+</html>

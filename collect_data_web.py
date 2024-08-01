@@ -18,6 +18,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
 # Set the log level to WARNING to suppress INFO messages
+from collect_logger import logger
 logging.getLogger('werkzeug').setLevel(logging.WARNING)
 
 
@@ -67,6 +68,7 @@ def start_sensors():
     def start_depth(cfg):
         # init camera
         camera = init_camera()
+        logger.info(f"init_camera")
 
         # set mode: Output both Depth and RGB frames in 30fps
         set_datamode(camera, mode='PsDepthAndRGB_30')
@@ -87,9 +89,10 @@ def start_sensors():
         baud_rate = cfg.BAUDRATE
         def open_serial_port():
             try:
+                logger.info(f"Open serial port")
                 return serial.Serial(ser_port, baud_rate)
             except SerialException as e:
-                print(f"Error: Could not open serial port {ser_port} - {e}")
+                logger.error(f"Error: Could not open serial port {ser_port} - {e}")
                 return None
 
         ser = open_serial_port()
@@ -128,32 +131,41 @@ def start_sensors():
 @app.route('/start_visual_emg')
 def start_visual_emg():
     global emg_serial
-    stop_events["emg"].set()
-    while stop_events["emg"].is_set():
-        if emg_serial.in_waiting > 0:
-            line = emg_serial.readline().decode().strip()
-            print("auto read serial data: ", line)
-            try:
-                data_list = json.loads(line)
-                for data in data_list:
-                    timestamp = data['timestamp']
-                    mac = data['mac']
-                    value = data['value']
-                    emg_data.append((timestamp, mac, value))
-                    socketio.emit('emg_data', {'timestamp': timestamp, 'mac': mac, 'value': value})
-                    
-                if len(emg_data) > 1500:  # Keep only the last 1500 EMG data points
-                    emg_data.pop(0)
-            except json.JSONDecodeError as e:
-                print(f"Failed to decode JSON: {e}")
-            except KeyError as e:
-                print(f"Missing key in JSON data: {e}")
+    frequency_limiter_count = 0  # 初始化计数器
+    while True:
+        try:
+            if emg_serial.in_waiting > 0:
+                line = emg_serial.readline().decode().strip()
+                logger.info(f"serial data: {line}")
+                try:
+                    data_list = json.loads(line)
+                    for data in data_list:
+                        timestamp = data['timestamp']
+                        mac = data['mac']
+                        value = data['value']
+                        emg_data.append((timestamp, mac, value))
+                        frequency_limiter_count += 1  
+                        if frequency_limiter_count % 5 == 0:  
+                            socketio.emit('emg_data', {'timestamp': timestamp, 'mac': mac, 'value': value})
+                            logger.debug(f"EMG data sent to client: {timestamp}, {mac}, {value}")
+                        
+                    if len(emg_data) > 1500:  
+                        emg_data.pop(0)
+                        logger.debug(f"Over 1500 EMG data points, pop the oldest one")
+
+                except json.JSONDecodeError as e:
+                    logger.error(f"Failed to decode JSON: {e}")
+                except KeyError as e:
+                    logger.error(f"Missing key in JSON data: {e}")
+        except Exception as e:
+            logger.error(f"Exception occurred while reading from serial port: {e}")
 
     return jsonify({"status": "Start Visualization"}), 200
 
 
 @app.route('/start_collection')
 def start_collection():
+    logger.info(f"start collection")
     global threads
     global emg_serial
     
@@ -174,19 +186,21 @@ def start_collection():
     with open(label_path, 'w') as f:
         f.write(pattern)
 
-    if not is_collecting["depth_and_rgb"]:
-        is_collecting["depth_and_rgb"] = True
-        stop_events["depth_and_rgb"].clear()
-        thread1 = threading.Thread(target=save_depthandrgb_web, args=(cfg, camera, stop_events["depth_and_rgb"], current_sec))
-        thread1.start()
-        threads.append(thread1)
+    # if not is_collecting["depth_and_rgb"]:
+    #     is_collecting["depth_and_rgb"] = True
+    #     stop_events["depth_and_rgb"].clear()
+    #     thread1 = threading.Thread(target=save_depthandrgb_web, args=(cfg, camera, stop_events["depth_and_rgb"], current_sec))
+    #     thread1.start()
+    #     threads.append(thread1)
+    #     logger.info(f"save_depth_rgb thread collection")
         
     if not is_collecting["emg"]:
         is_collecting["emg"] = True
         stop_events["emg"].clear()
-        thread2 = threading.Thread(target=save_emg_web, args=(cfg, emg_serial, stop_events["emg"], current_sec, emg_data))
+        thread2 = threading.Thread(target=save_emg_web, args=(cfg, stop_events["emg"], current_sec, emg_data))
         thread2.start()
         threads.append(thread2)
+        logger.info(f"save_emg_web thread collection")
 
     return jsonify({"status": "Data collection started"})
 
@@ -217,4 +231,4 @@ def stop_collection():
 #         return jsonify({}), 200
     
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=5001, debug=False)
+    socketio.run(app, host='0.0.0.0', port=5002, debug=False)

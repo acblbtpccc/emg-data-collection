@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMG Data Collection</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.0.0/dist/echarts.min.js"></script>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <style>
+        body {
+            padding: 20px;
+        }
+        #emgChart {
+            width: 100%;
+            height: 400px;
+        }
+        .form-group {
+            margin-right: 20px;
+        }
+        .btn-file {
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-file input[type=file] {
+            position: absolute;
+            top: 0;
+            right: 0;
+            min-width: 100%;
+            min-height: 100%;
+            font-size: 100px;
+            text-align: right;
+            filter: alpha(opacity=0);
+            opacity: 0;
+            outline: none;
+            background: white;
+            cursor: inherit;
+            display: block;
+        }
+        .btn-margin-right {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mb-4 text-center"> EMG and Depth Data Collection Control Panel</h1>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="h5">Control Panel</h2>
+            </div>
+            <div class="card-body">
+                <div class="form-inline mb-4">
+                    <div class="form-group">
+                        <label for="subjectName" class="mr-2">Subject Name</label>
+                        <input type="text" id="subjectName" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="action" class="mr-2">Action</label>
+                        <input type="text" id="action" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="pattern" class="mr-2">Description</label>
+                        <input type="text" id="pattern" class="form-control">
+                    </div>
+                </div>
+                <div class="form-inline mb-4">
+                    <button id="startSensorsButton" class="btn btn-primary btn-margin-right">Start Sensors</button>
+                    <button id="startButton" class="btn btn-success btn-margin-right">Start Collection</button>
+                    <button id="stopButton" class="btn btn-danger btn-margin-right">Stop Collection</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="h5">Visualization</h2>
+            </div>
+            <div class="card-body">
+                <div id="emgChart"></div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="h5">Latest EMG Data</h2>
+            </div>
+            <div class="card-body">
+                <ul id="emgDataList" class="list-group mb-4"></ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // 初始化ECharts实例
+            let emgChart = echarts.init(document.getElementById('emgChart'));
+
+            // 初始化图表的配置和数据
+            let option = {
+                title: {
+                    text: 'Real-time EMG Data'
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    formatter: function (params) {
+                        params = params[0];
+                        let date = new Date(params.value[0]);
+                        return date.toLocaleTimeString() + ' : ' + params.value[1];
+                    },
+                    axisPointer: {
+                        animation: false
+                    }
+                },
+                xAxis: {
+                    type: 'time',
+                    splitLine: {
+                        show: false
+                    },
+                    axisLabel: {
+                        formatter: function(value) {
+                            let date = new Date(value);
+                            return date.toLocaleTimeString();
+                        }
+                    }
+                },
+                yAxis: {
+                    type: 'value',
+                    min: 0,
+                    max: 4000,
+                    splitLine: {
+                        show: false
+                    }
+                },
+                series: []
+            };
+            emgChart.setOption(option);
+            
+            $('#startSensorsButton').click(function() {
+                $.ajax({
+                    url: '/start_sensors',
+                    method: 'GET',
+                    success: function(response) {
+                        alert(response.status);
+                        $.ajax({
+                            url: '/start_visual_emg',
+                            method: 'GET',
+                            success: function(response) {
+                                console.log(response.status);
+                            },
+                            error: function(xhr, status, error) {
+                                alert('Failed to visualization ' + error);
+                            }
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        alert('Failed to start sensors: ' + error);
+                    }
+                });
+            });
+
+            $('#startButton').click(function() {
+                let subjectName = $('#subjectName').val();
+                let action = $('#action').val();
+                let pattern = $('#pattern').val();
+
+                if (subjectName && action) {
+                    $.get('/start_collection', { subject: subjectName, action: action, pattern: pattern }, function(data) {
+                        alert(data.status);
+                    });
+                } else {
+                    alert("Please enter both subject name and action.");
+                }
+            });
+
+            $('#stopButton').click(function() {
+                $.get('/stop_collection', function(data) {
+                    alert(data.status);
+                });
+
+                $.ajax({
+                    url: '/start_visual_emg',
+                    method: 'GET',
+                    success: function(response) {
+                        console.log(response.status);
+                    },
+                    error: function(xhr, status, error) {
+                        alert('Failed to visualization ' + error);
+                    }
+                });
+            });
+            
+            var emgValues = {};
+
+            // 连接到服务器的WebSocket
+            var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+            socket.on('emg_data', function(data) {
+                var timestamp = new Date(data.timestamp);
+                var macAddress = data.mac;
+                var emgValue = parseFloat(data.value);
+                var source = data.source || macAddress;
+                var now = new Date();
+
+                if (!emgValues[source]) {
+                    emgValues[source] = [];
+                }
+                emgValues[source].push([timestamp, emgValue]);
+
+                emgValues[source] = emgValues[source].filter(function(point) {
+                    return now - point[0] <= 10000; // 只保留30秒内的数据
+                });
+
+                let series = Object.keys(emgValues).map((src, index) => {
+                    return {
+                        name: `Biceps (${src})`,
+                        type: 'line',
+                        data: emgValues[src],
+                        sampling: 'lttb',
+                        symbol: 'none'
+                    };
+                });
+
+                let legendData = Object.keys(emgValues).map(src => `Biceps (${src})`);
+
+                emgChart.setOption({
+                    legend: {
+                        data: legendData
+                    },
+                    series: series,
+                    xAxis: {
+                        min: new Date(now.getTime() - 6000), // 显示过去30秒的数据
+                        max: now, // j显示过去30秒的数据
+                    }
+                });
+
+                // 更新最新的EMG数据列表
+                $('#emgDataList').prepend(
+                    `<li class="list-group-item">
+                        <span class="badge badge-info">${source}</span>
+                        ${emgValue} at ${timestamp.toLocaleTimeString()}
+                    </li>`
+                );
+            });
+        });
+    </script>
+</body>
+</html>
