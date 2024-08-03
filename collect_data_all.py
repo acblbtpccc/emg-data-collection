@@ -47,10 +47,10 @@ def save_depthandrgb_web(cfg, camera, stop_event, current_sec):
 
     # init video writer
     vout_d = cv2.VideoWriter()
-    vout_d.open(depth_video_path, cv2.VideoWriter_fourcc(*'mp4v'), cfg.CMAERA.FPS, (cfg.CMAERA.WIDTH, cfg.CMAERA.HEIGHT), isColor=False)
+    vout_d.open(depth_video_path, cv2.VideoWriter_fourcc(*'mp4v'), cfg.CMAERA.FPS, (cfg.CMAERA.HEIGHT, cfg.CMAERA.WIDTH), isColor=False)
 
     vout_rgb = cv2.VideoWriter()
-    vout_rgb.open(rgb_video_path, cv2.VideoWriter_fourcc(*'mp4v'), cfg.CMAERA.FPS, (cfg.CMAERA.WIDTH, cfg.CMAERA.HEIGHT), isColor=True)
+    vout_rgb.open(rgb_video_path, cv2.VideoWriter_fourcc(*'mp4v'), cfg.CMAERA.FPS, (cfg.CMAERA.HEIGHT, cfg.CMAERA.WIDTH), isColor=True)
 
     # init csv writer
     with open(frame_info_path, "a") as frame_info:
@@ -75,6 +75,7 @@ def save_depthandrgb_web(cfg, camera, stop_event, current_sec):
                     img = img*255 / depth_max
                     img = np.clip(img, 0, 255)
                     img = np.uint8(img)
+                    img = numpy.rot90(img, k=-1)
                     timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S.%f")
                     vout_d.write(img)
 
@@ -87,10 +88,10 @@ def save_depthandrgb_web(cfg, camera, stop_event, current_sec):
             if frameready.rgb:
                 ret, rgbframe = camera.Ps2_GetFrame(PsFrameType.PsRGBFrame)
                 if  ret == 0:
-                    frametmp = numpy.ctypeslib.as_array(rgbframe.pFrameData, (1, rgbframe.width * rgbframe.height * 3))
+                    frametmp = numpy.ctypeslib.as_array(rgbframe.pFrameData, (rgbframe.height, rgbframe.width, 3))
                     frametmp.dtype = numpy.uint8
-                    frametmp.shape = (rgbframe.height, rgbframe.width, 3)
-                    vout_rgb.write(frametmp)
+                    rotated_frame = numpy.rot90(frametmp, k=-1)
+                    vout_rgb.write(rotated_frame)
                     
     finally:
         print("video {:s} has been writen!".format(depth_video_path))
@@ -145,57 +146,8 @@ def save_emg_web(cfg, stop_event, current_sec, emg_queue):
     finally:
         logger.error(f"EMGs {emg_path} has been written!")
 
-# def save_emg_web(cfg, stop_event, current_sec, shared_emg_data):
-#     logger.debug(f"stop_event: {stop_event}", )
-
-#     emg_path = ''
-#     header = ['timestamp', 'mac_address', 'emg_value']
-#     emg_path = os.path.join(cfg.emg_dir, current_sec+'.csv')
-#     with open(emg_path, 'a') as emg_data:
-#         writer = csv.writer(emg_data)
-#         writer.writerow(header)  
-#     try:
-#         while not stop_event.is_set():
-#             logger.debug(f"stop_event: {stop_event}", )
-#             # 从shared_emg_data中获取数据并保存
-#             while shared_emg_data:
-#                 try:
-#                     timestamp, mac, value = shared_emg_data.pop(0)
-#                     # Log EMG data
-#                     with open(emg_path, "a") as emg_data:
-#                         writer = csv.writer(emg_data)
-#                         writer.writerow([timestamp, mac, value])
-                    
-#                     logger.debug(f"Collected data from {mac}: {value}")
-
-#                     if len(shared_emg_data) > 1500:  # Keep only the last 50 EMG data points
-#                         shared_emg_data.pop(0)
-#                 except KeyError as e:
-#                     logger.error(f"Missing key in shared EMG data: {e}")
-#                     continue
-#             logger.debug("save_emg_web one loop finished")
-
-#     except Exception as e:
-#         logger.error(f"An error occurred while saving EMG data: {e}")
-#     finally:
-#         logger.error("EMGs {:s} has been written!".format(emg_path))
-
 
 def collect_depthandrgb(cfg, camera):
-    # # init camera
-    # camera = init_camera()
-
-    # # set mode: Output both Depth and RGB frames in 30fps
-    # set_datamode(camera, mode='PsDepthAndRGB_30')
-
-    # # set RGB resoultion: (640, 280), (1280, 720), (640, 360)
-    # set_resolution(camera, resol='PsRGB_Resolution_640_480')  
-
-    # # mapping RGB image to depth camera space
-    # set_mapper(camera, mapper='r2d') 
-
-    # # set depth range: near, mid, far
-    # set_range(camera, range='mid')
     _, depthrange = camera.Ps2_GetDepthRange()
     _, depth_max, value_min, value_max = camera.Ps2_GetMeasuringRange(PsDepthRange(depthrange.value))
     print("depth_max, value_min, value_max: ", depth_max, value_min, value_max)

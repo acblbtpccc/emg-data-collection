@@ -75,7 +75,8 @@
                 <div class="form-inline mb-4">
                     <button id="startSensorsButton" class="btn btn-primary btn-margin-right">Start Sensors</button>
                     <button id="startButton" class="btn btn-success btn-margin-right">Start Collection</button>
-                    <button id="stopButton" class="btn btn-danger btn-margin-right">Stop Collection</button>
+                    <!-- <div>Countdown: <span id="countdown">3</span> Second</div> -->
+                    <!-- <button id="stopButton" class="btn btn-danger btn-margin-right">Stop Collection</button> -->
                 </div>
             </div>
         </div>
@@ -186,29 +187,34 @@
                 if (subjectName && action) {
                     $.get('/start_collection', { subject: subjectName, action: action, pattern: pattern }, function(data) {
                         showToast(data.status, 'success');
+                        window.open('/countdown', 'newwindow', 'width=600,height=600,left=400,top=400');
                     });
                 } else {
                     showToast("Please enter both subject name and action.", 'warning');
                 }
-            });
+                
+                // var countdownElement = $('#countdown');
+                // var countdownTime = 3; 
+                // countdownElement.text(countdownTime); 
+                // var interval = setInterval(function() {
+                //     countdownTime--; // 每次减少1秒
+                //     countdownElement.text(countdownTime); 
+                //     if (countdownTime <= 0) {
+                //         clearInterval(interval); 
 
-            $('#stopButton').click(function() {
-                $.get('/stop_collection', function(data) {
-                    showToast(data.status, 'success');
-                    location.reload(); // Refresh the page after stopping collection
-                });
-
-                // $.ajax({
-                //     url: '/start_visual_emg',
-                //     method: 'GET',
-                //     success: function(response) {
-                //         console.log(response.status);
-                //     },
-                //     error: function(xhr, status, error) {
-                //         showToast('Failed to visualization: ' + error, 'danger');
+                //         $.get('/stop_collection', function(data) {
+                //             showToast(data.status, 'success');
+                //         });
                 //     }
-                // });
+                // }, 1000); 
             });
+
+            // $('#stopButton').click(function() {
+            //     $.get('/stop_collection', function(data) {
+            //         showToast(data.status, 'success');
+            //         location.reload(); // Refresh the page after stopping collection
+            //     });
+            // });
             
             // 连接到服务器的WebSocket
             var socket = io.connect('http://' + document.domain + ':' + location.port);

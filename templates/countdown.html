@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Data Collection Countdown</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        #countdown {
+            font-size: 100px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Data collection in progress...</h1>
+    <div>Time left: <span id="countdown">3</span> seconds</div>
+    <script>
+        $(function() {
+            var countdownTime = 3;
+            var countdownElement = $('#countdown');
+            countdownElement.text(countdownTime);
+
+            var audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+            function playBeep(frequency, duration, callback) {
+                var oscillator = audioContext.createOscillator();
+                var gainNode = audioContext.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                oscillator.type = 'square';
+                oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+                gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+
+                oscillator.start();
+                setTimeout(function() {
+                    oscillator.stop();
+                    if (callback) {
+                        callback(); // Execute callback after the sound has played
+                    }
+                }, duration);
+            }
+
+            // Play the initial beep sound at the start
+            playBeep(440, 200);
+
+            var interval = setInterval(function() {
+                countdownTime--;
+                countdownElement.text(countdownTime);
+
+                if (countdownTime > 0) {
+                    playBeep(440, 200); // Play a 440 Hz tone
+                } else {
+                    clearInterval(interval);
+                    $.get('/stop_collection', function(data) {
+                            // showToast(data.status, 'success');
+                        });
+                    playBeep(880, 600, function() { // Play a higher 880 Hz tone at the end with longer duration
+                        // Close the window after the final beep has played
+                        window.close();
+                    }); 
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
