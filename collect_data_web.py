@@ -142,22 +142,17 @@ def start_visual_emg():
                 line = emg_serial.readline().decode().strip()
                 logger.info(f"serial data: {line}")
                 try:
-                    data_list = json.loads(line)
-                    for data in data_list:
-                        timestamp = data['timestamp']
-                        mac = data['mac']
-                        value = data['value']
-                        # emg_data.append((timestamp, mac, value))
-                        emg_queue.put((timestamp, mac, value))
-                        frequency_limiter_count += 1  
-                        if frequency_limiter_count % 5 == 0:  
-                            
-                            socketio.emit('emg_data', {'timestamp': timestamp, 'mac': mac, 'value': value})
-                            logger.debug(f"EMG data sent to client: {timestamp}, {mac}, {value}")
-                        
-                    # if len(emg_data) > 1500:  
-                    #     emg_data.pop(0)
-                    #     logger.debug(f"Over 1500 EMG data points, pop the oldest one")
+                    data_dict = json.loads(line)
+                    for mac, data in data_dict.items():
+                        values = data['values']
+                        for entry in values:
+                            timestamp = entry['timestamp']
+                            value = entry['value']
+                            emg_queue.put((timestamp, mac, value))
+                            frequency_limiter_count += 1  
+                            if frequency_limiter_count % 5 == 0:  
+                                socketio.emit('emg_data', {'timestamp': timestamp, 'mac': mac, 'value': value})
+                                logger.debug(f"EMG data sent to client: {timestamp}, {mac}, {value}")
 
                 except json.JSONDecodeError as e:
                     logger.error(f"Failed to decode JSON: {e}")

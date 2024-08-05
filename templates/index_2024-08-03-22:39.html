@@ -118,6 +118,9 @@
 
             // 初始化图表的配置和数据
             let option = {
+                title: {
+                    text: 'Real-time EMG Data'
+                },
                 tooltip: {
                     trigger: 'axis',
                     formatter: function (params) {
@@ -228,71 +231,63 @@
             const MAX_TIME_DIFF = 10000; // 10秒
 
             socket.on('emg_data', function(data) {
-                console.log(data);
-                var timestamp = new Date(data.timestamp);
-                // var macAddress = data.mac;
-                // var emgValue = parseFloat(data.value);
-                // var source = data.mac;
-                var now = new Date();
+            var timestamp = new Date(data.timestamp);
+            var macAddress = data.mac;
+            var emgValue = parseFloat(data.value);
+            var source = data.source || macAddress;
+            var now = new Date();
 
-                if (!emgValues[data.mac]) {
-                    emgValues[data.mac] = [];
-                }
+            if (!emgValues[source]) {
+                emgValues[source] = [];
+            }
+            var queue = emgValues[source];
+            queue.push([timestamp, emgValue]);
 
-                var queue = emgValues[data.mac];
-                const MAX_QUEUE_SIZE = 100;
-                queue.push([timestamp, data.value]);
-                console.log('Queue length: ');
-                console.log(queue.length);
-                
-                if (queue.length > MAX_QUEUE_SIZE) {
-                    queue.shift();
-                    console.log('Queue is full, shift the first element');                    
-                }
+            while (queue.length > 0 && timestamp - queue[0][0] > MAX_TIME_DIFF) {
+                queue.shift();
+            }
 
-                let series = Object.keys(emgValues).map((src, index) => {
-                    return {
-                        name: `Biceps (${src})`,
-                        type: 'line',
-                        data: emgValues[src],
-                        sampling: 'lttb',
-                        symbol: 'none'
-                    };
-                });
-
-                let legendData = Object.keys(emgValues).map(src => `Biceps (${src})`);
-                let minTime = new Date(timestamp.getTime() - MAX_TIME_DIFF);
-                let maxTime = timestamp;
-
-                emgChart.setOption({
-                    legend: {
-                        data: legendData
-                    },
-                    series: series,
-                    xAxis: {
-                        min: minTime, // 显示过去10秒的数据
-                        max: maxTime, 
-                    }
-                });
+            let series = Object.keys(emgValues).map((src, index) => {
+                return {
+                    name: `Biceps (${src})`,
+                    type: 'line',
+                    data: emgValues[src],
+                    sampling: 'lttb',
+                    symbol: 'none'
+                };
             });
 
-            // function updateBufferedAmount() {
-            //     var transport = socket.io.engine.transport;
-            //     if (transport && transport.name === 'websocket') {
-            //         var ws = transport.ws;
-            //         if (ws) {
-            //             var bufferedAmount = ws.bufferedAmount;
-            //             document.getElementById('bufferedAmount').textContent = `Buffered Amount: ${bufferedAmount} bytes`;
-            //             // console.log(`Buffered Amount: ${bufferedAmount} bytes`);
-            //         } else {
-            //             document.getElementById('bufferedAmount').textContent = 'Buffered Amount: WebSocket instance not found';
-            //             console.log('WebSocket instance not found');
-            //         }
-            //     } else {
-            //         document.getElementById('bufferedAmount').textContent = 'Buffered Amount: WebSocket transport not available';
-            //         console.log('WebSocket transport not available');
-            //     }
-            // }
+            let legendData = Object.keys(emgValues).map(src => `Biceps (${src})`);
+
+            emgChart.setOption({
+                legend: {
+                    data: legendData
+                },
+                series: series,
+                xAxis: {
+                    min: new Date(timestamp.getTime() - MAX_TIME_DIFF), // 显示过去10秒的数据
+                    max: timestamp, 
+                }
+            });
+        });
+
+            function updateBufferedAmount() {
+                var transport = socket.io.engine.transport;
+                if (transport && transport.name === 'websocket') {
+                    var ws = transport.ws;
+                    if (ws) {
+                        var bufferedAmount = ws.bufferedAmount;
+                        document.getElementById('bufferedAmount').textContent = `Buffered Amount: ${bufferedAmount} bytes`;
+                        // console.log(`Buffered Amount: ${bufferedAmount} bytes`);
+                    } else {
+                        document.getElementById('bufferedAmount').textContent = 'Buffered Amount: WebSocket instance not found';
+                        console.log('WebSocket instance not found');
+                    }
+                } else {
+                    document.getElementById('bufferedAmount').textContent = 'Buffered Amount: WebSocket transport not available';
+                    console.log('WebSocket transport not available');
+                }
+            }
 
             function showToast(message, type) {
                 var toastId = 'toast-' + Date.now();
@@ -317,7 +312,7 @@
             }
 
             // 定时检查 WebSocket 缓冲区状态
-            // setInterval(updateBufferedAmount, 1000);
+            setInterval(updateBufferedAmount, 1000);
         });
     </script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
