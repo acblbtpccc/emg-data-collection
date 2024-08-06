@@ -91,7 +91,12 @@ def create_notify_callback(client):
         elapsed_millis = current_millis - boot_time_millis
 
         try:
-            # for general
+            # services = await client.get_services()
+            # for service in services:
+            #     print(f"Service: {service.uuid}")
+            #     for characteristic in service.characteristics:
+            #         print(f"  Characteristic: {characteristic.uuid}")
+            
             address = client.address
             # for macos
             # address = sender.obj.peripheral().identifier().UUIDString() 
