@@ -14,7 +14,7 @@ from DCAM710.API.Vzense_api_710_aiot_modified import *
 from serial.serialutil import SerialException
 from collect_logger import logger
 import bleak_central_mac  # Import the module
-logging.getLogger('werkzeug').setLevel(logging.WARNING)
+logging.getLogger('werkzeug').setLevel(logging.INFO)
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
@@ -177,7 +177,7 @@ def countdown():
     return render_template('countdown.html')
     
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=5002, debug=False)
+    socketio.run(app, host='0.0.0.0', port=5002, debug=True)
 
 
 # # collect_data_wed_fixtime.py

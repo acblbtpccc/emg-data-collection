@@ -84,64 +84,68 @@ boot_time_millis = 0
 #     timestamp = hong_kong_time.strftime('%Y-%m-%d %H:%M:%S')
 #     milliseconds = elapsed_millis % 1000
 #     return f"{timestamp}.{milliseconds:03d}"
+def create_notify_callback(client):
+    async def notify_callback(sender, data):
+        global boot_time_millis
+        current_millis = int(time.time() * 1000)
+        elapsed_millis = current_millis - boot_time_millis
 
-async def notify_callback(sender, data):
-    global boot_time_millis
-    current_millis = int(time.time() * 1000)
-    elapsed_millis = current_millis - boot_time_millis
+        try:
+            # for general
+            address = client.address
+            # for macos
+            # address = sender.obj.peripheral().identifier().UUIDString() 
+        except AttributeError:
+            print("Error: Could not retrieve the device address from the sender object.")
+            return
 
-    try:
-        address = sender.obj.peripheral().identifier().UUIDString() 
-    except AttributeError:
-        print("Error: Could not retrieve the device address from the sender object.")
-        return
+        if running_mode == "up-to-host":
+            # Add data to JSON document
+            with notify_buffer_lock:
+                peripheral = on_notify_call_buffer.setdefault(address, {})
+                values_array = peripheral.setdefault("values", [])
 
-    if running_mode == "up-to-host":
-        # Add data to JSON document
-        with notify_buffer_lock:
-            peripheral = on_notify_call_buffer.setdefault(address, {})
-            values_array = peripheral.setdefault("values", [])
+                for i in range(len(data) // 2):
+                    value = int.from_bytes(data[i*2:i*2+2], byteorder='big')
+                    timestamp_millis = current_millis - (len(data) // 2 - 1 - i) * peripheral_interval
+                    timestamp = datetime.fromtimestamp(timestamp_millis / 1000.0).strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
+                    values_array.append({"timestamp": timestamp, "value": value})
 
-            for i in range(len(data) // 2):
-                value = int.from_bytes(data[i*2:i*2+2], byteorder='big')
-                timestamp_millis = current_millis - (len(data) // 2 - 1 - i) * peripheral_interval
-                timestamp = datetime.fromtimestamp(timestamp_millis / 1000.0).strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
-                values_array.append({"timestamp": timestamp, "value": value})
-
-            # Only emit the last data point of the packet
-            socketio.emit('emg_data', {
-                'timestamp': timestamp,
-                'mac': address,
-                'value': value
-            })
-            
-            print('timestamp:', timestamp, 'mac:', address, 'value:', value)
-            # print(json.dumps(on_notify_call_buffer))
-
-            # Clear the document for the next notification
-            on_notify_call_buffer.clear()
-    # elif running_mode == "standalone":
-    #     address_index = next((i for i, a in enumerate(vec_myo_ware_shields) if a == address), None)
-    #     if address_index is None:
-    #         print("Address not found in vector")
-    #         return
-
-    #     for i in range(len(data) // 2):
-    #         serial_pre_values[i] = int.from_bytes(data[i*2:i*2+2], byteorder='big')
-
-    #     with data_received_lock:
-    #         data_received[address_index] = True
-
-    #     all_received = all(data_received[:len(vec_myo_ware_shields)])
-
-    #     if all_received:
-    #         if debug_logging:
-    #             print(f"Received all peripheral data: {serial_pre_values}")
+                # Only emit the last data point of the packet
+                socketio.emit('emg_data', {
+                    'timestamp': timestamp,
+                    'mac': address,
+                    'value': value
+                })
                 
-    #         # Reset data_received array for the next batch
-    #         with data_received_lock:
-    #             for i in range(len(vec_myo_ware_shields)):
-    #                 data_received[i] = False
+                print('timestamp:', timestamp, 'mac:', address, 'value:', value)
+                # print(json.dumps(on_notify_call_buffer))
+
+                # Clear the document for the next notification
+                on_notify_call_buffer.clear()
+        # elif running_mode == "standalone":
+        #     address_index = next((i for i, a in enumerate(vec_myo_ware_shields) if a == address), None)
+        #     if address_index is None:
+        #         print("Address not found in vector")
+        #         return
+
+        #     for i in range(len(data) // 2):
+        #         serial_pre_values[i] = int.from_bytes(data[i*2:i*2+2], byteorder='big')
+
+        #     with data_received_lock:
+        #         data_received[address_index] = True
+
+        #     all_received = all(data_received[:len(vec_myo_ware_shields)])
+
+        #     if all_received:
+        #         if debug_logging:
+        #             print(f"Received all peripheral data: {serial_pre_values}")
+                    
+        #         # Reset data_received array for the next batch
+        #         with data_received_lock:
+        #             for i in range(len(vec_myo_ware_shields)):
+        #                 data_received[i] = False
+    return notify_callback
 
 async def on_advertised_device(device, advertisement_data):
     print(f"Detected device: {device.address} with RSSI: {device.rssi}")
@@ -227,6 +231,7 @@ async def connect_to_shields():
 
             if shield_connected:
                 try:
+                    notify_callback = create_notify_callback(client)
                     await client.start_notify(myo_ware_characteristic_uuid, notify_callback)
                     print("Subscribed to notifications")
                 except Exception as e:
