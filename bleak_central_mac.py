@@ -84,7 +84,7 @@ boot_time_millis = 0
 #     timestamp = hong_kong_time.strftime('%Y-%m-%d %H:%M:%S')
 #     milliseconds = elapsed_millis % 1000
 #     return f"{timestamp}.{milliseconds:03d}"
-def create_notify_callback(client):
+def create_notify_callback(client, emg_queue, stop_event):
     async def notify_callback(sender, data):
         global boot_time_millis
         current_millis = int(time.time() * 1000)
@@ -115,6 +115,8 @@ def create_notify_callback(client):
                     timestamp_millis = current_millis - (len(data) // 2 - 1 - i) * peripheral_interval
                     timestamp = datetime.fromtimestamp(timestamp_millis / 1000.0).strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
                     values_array.append({"timestamp": timestamp, "value": value})
+                    if not stop_event.is_set():
+                        emg_queue.put((timestamp, address, value))
 
                 # Only emit the last data point of the packet
                 socketio.emit('emg_data', {
@@ -199,7 +201,7 @@ async def fetch_connection_params():
             await asyncio.sleep(1)
     return False
 
-async def connect_to_shields():
+async def connect_to_shields(emg_queue, stop_event):
     global vec_myo_ware_clients
     print("Start Connect to MyoWare Wireless Shields...")
 
@@ -236,13 +238,13 @@ async def connect_to_shields():
 
             if shield_connected:
                 try:
-                    notify_callback = create_notify_callback(client)
+                    notify_callback = create_notify_callback(client, emg_queue, stop_event)
                     await client.start_notify(myo_ware_characteristic_uuid, notify_callback)
                     print("Subscribed to notifications")
                 except Exception as e:
                     print(f"Error subscribing to notifications: {e}")
 
-async def main(socketio_instance):
+async def main(socketio_instance, emg_queue, stop_event):
     global ntp_time, boot_time_millis, socketio
     socketio = socketio_instance  # Use the passed SocketIO instance
 
@@ -273,7 +275,7 @@ async def main(socketio_instance):
         print("No MyoWare Wireless Shields found!")
         return
 
-    await connect_to_shields()
+    await connect_to_shields(emg_queue, stop_event)
 
     while True:
         await asyncio.sleep(10)

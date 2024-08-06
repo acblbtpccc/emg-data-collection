@@ -227,6 +227,17 @@
             var emgValues = {};
             const MAX_TIME_DIFF = 10000; // 10秒
 
+            const macToMuscle = {
+            'E4:65:B8:14:BA:9A': { id: '01', name: 'L_Biceps' },
+            'D4:8A:FC:C5:8B:B2': { id: '02', name: 'R_Biceps' },
+            'E4:65:B8:14:79:5E': { id: '03', name: 'L_Deltoid' }, // 确保MAC地址是大写
+            'D4:8A:FC:C5:A5:CA': { id: '04', name: 'R_Deltoid' },
+            'D4:8A:FC:C4:B0:C6': { id: '05', name: 'L_Latiss' },
+            'D4:8A:FC:C5:AB:32': { id: '06', name: 'R_Latiss' },
+            'D4:8A:FC:C5:9E:12': { id: '07', name: 'L_Trapezius' },
+            'D4:8A:FC:C5:06:7E': { id: '08', name: 'R_Trapezius' }
+        };
+
             socket.on('emg_data', function(data) {
                 console.log(data);
                 var timestamp = new Date(data.timestamp);
@@ -250,17 +261,21 @@
                     console.log('Queue is full, shift the first element');                    
                 }
 
-                let series = Object.keys(emgValues).map((src, index) => {
+                let series = Object.keys(emgValues).map((mac, index) => {
+                    let muscleInfo = macToMuscle[mac] || { id: 'Unknown', name: 'Unknown Muscle' };
                     return {
-                        name: `Biceps (${src})`,
+                        name: `${muscleInfo.name} (ID: ${muscleInfo.id})`,
                         type: 'line',
-                        data: emgValues[src],
+                        data: emgValues[mac],
                         sampling: 'lttb',
                         symbol: 'none'
                     };
                 });
 
-                let legendData = Object.keys(emgValues).map(src => `Biceps (${src})`);
+                let legendData = Object.keys(emgValues).map(mac => {
+                    let muscleInfo = macToMuscle[mac] || { id: 'Unknown', name: 'Unknown Muscle' };
+                    return `${muscleInfo.name} (ID: ${muscleInfo.id})`;
+                });
                 let minTime = new Date(timestamp.getTime() - MAX_TIME_DIFF);
                 let maxTime = timestamp;
 

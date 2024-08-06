@@ -100,10 +100,21 @@ def save_depthandrgb_web(cfg, camera, stop_event, current_sec):
 
  
 def save_emg_web(cfg, stop_event, current_sec, emg_queue):
+    # MAC address to muscle mapping
+    mac_to_info = {
+    'E4:65:B8:14:BA:9A': ('01', 'L_Biceps'),
+    'D4:8A:FC:C5:8B:B2': ('02', 'R_Biceps'),
+    'E4:65:B8:14:79:5E': ('03', 'L_Deltoid'),
+    'D4:8A:FC:C5:A5:CA': ('04', 'R_Deltoid'),
+    'D4:8A:FC:C4:B0:C6': ('05', 'L_Latiss'),
+    'D4:8A:FC:C5:AB:32': ('06', 'R_Latiss'),
+    'D4:8A:FC:C5:9E:12': ('07', 'L_Trapezius'),
+    'D4:8A:FC:C5:06:7E': ('08', 'R_Trapezius')
+}
     logger.debug(f"stop_event: {stop_event}")
 
     emg_path = os.path.join(cfg.emg_dir, current_sec + '.csv')
-    header = ['timestamp', 'mac_address', 'emg_value']
+    header = ['timestamp', 'EMGID', 'mac_address', 'muscle', 'emg_value']
 
     with open(emg_path, 'a', newline='') as emg_data:
         writer = csv.writer(emg_data)
@@ -118,8 +129,9 @@ def save_emg_web(cfg, stop_event, current_sec, emg_queue):
             
             try:
                 timestamp, mac, value = emg_queue.get(timeout=1)
-                buffer.append([timestamp, mac, value])
-                logger.debug(f"{timestamp}: {mac}: {value}")
+                emgid, muscle = mac_to_info.get(mac, ("Unknown", "Unknown"))
+                buffer.append([timestamp, emgid, mac, muscle, value])
+                logger.debug(f"{timestamp}: {emgid}: {mac}: {muscle}: {value}")
                 
                 # 当缓冲区达到批量大小时写入文件
                 if len(buffer) >= batch_size:

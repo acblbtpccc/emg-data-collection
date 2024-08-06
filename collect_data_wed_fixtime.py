@@ -1,5 +1,6 @@
 from flask import Flask, request, render_template, jsonify
 import json
+import time
 import logging
 import threading
 import queue
@@ -13,8 +14,11 @@ from camera_utils import init_camera, set_datamode, set_resolution, set_mapper, 
 from DCAM710.API.Vzense_api_710_aiot_modified import *
 from serial.serialutil import SerialException
 from collect_logger import logger
-import bleak_central_mac  # Import the module
+# import bleak_central_mac  # Import the module
+from bleak_central_mac import main as bleak_main
 logging.getLogger('werkzeug').setLevel(logging.INFO)
+# import sys
+# sys.coinit_flags = 0  # 0 means MTA
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
@@ -37,28 +41,6 @@ def start_sensors():
     global threads
     global camera
 
-    def list_usb_devices():
-        try:
-            result = subprocess.run(['lsusb'], capture_output=True, text=True, check=True)
-            print(result.stdout)
-        except subprocess.CalledProcessError as e:
-            print(f"Error occurred: {e}")
-
-    def test_device_access(busnum, devnum):
-        device_path = f"/dev/bus/usb/{busnum:03}/{devnum:03}"
-        try:
-            with open(device_path, 'rb') as device_file:
-                print(f"Successfully opened {device_path} for reading.")
-                # read some data to test usb
-                data = device_file.read(1000)
-                print(f"Read data: {data}")
-        except PermissionError:
-            print(f"Permission denied: Could not open {device_path}.")
-        except FileNotFoundError:
-            print(f"Device not found: {device_path}.")
-        except Exception as e:
-            print(f"An error occurred: {e}")
-
     def start_depth(cfg):
         # init camera
         camera = init_camera()
@@ -70,18 +52,81 @@ def start_sensors():
         # set RGB resoultion: (640, 280), (1280, 720), (640, 360)
         set_resolution(camera, resol='PsRGB_Resolution_640_480')  
 
-        # mapping RGB image to depth camera space
-        # set_mapper(camera, mapper='r2d') 
-
         # set depth range: near, mid, far
         set_range(camera, range='far')
 
         return camera
 
-    # start depth camera
+    async def main_operation(socketio, emg_queue, stop_events, cfg):
+        # Start depth camera
+        camera = start_depth(cfg)
+        read_try_times = 100
+        depth_ret = None
+
+        for _ in range(read_try_times):
+            depth_ret, _ = camera.Ps2_ReadNextFrame()
+            if depth_ret == 0:
+                print("Ps2_ReadNextFrame successful")
+                break
+            else:
+                print("Ps2_ReadNextFrame failed:", depth_ret, read_try_times)
+                await asyncio.sleep(1)  # Non-blocking sleep
+
+        if depth_ret != 0:
+            print("Depth camera not connected.")
+            return jsonify({"status": "Depth No Data Read Out"}), 500
+
+        # Connect to EMG sensor
+        await bleak_main(socketio, emg_queue, stop_events["emg"])
+
+        return jsonify({"status": "All systems operational"}), 200
+
     cfg, _ = parse_args_sensors()
+    # Setup Flask or any other async-compatible environment before running this
+    asyncio.run(main_operation(socketio, emg_queue, stop_events, cfg))
+
+
+    # def list_usb_devices():
+    #     try:
+    #         result = subprocess.run(['lsusb'], capture_output=True, text=True, check=True)
+    #         print(result.stdout)
+    #     except subprocess.CalledProcessError as e:
+    #         print(f"Error occurred: {e}")
+
+    # def test_device_access(busnum, devnum):
+    #     device_path = f"/dev/bus/usb/{busnum:03}/{devnum:03}"
+    #     try:
+    #         with open(device_path, 'rb') as device_file:
+    #             print(f"Successfully opened {device_path} for reading.")
+    #             # read some data to test usb
+    #             data = device_file.read(1000)
+    #             print(f"Read data: {data}")
+    #     except PermissionError:
+    #         print(f"Permission denied: Could not open {device_path}.")
+    #     except FileNotFoundError:
+    #         print(f"Device not found: {device_path}.")
+    #     except Exception as e:
+    #         print(f"An error occurred: {e}")
+
+    # def start_depth(cfg):
+    #     # init camera
+    #     camera = init_camera()
+    #     logger.info(f"init_camera")
+
+    #     # set mode: Output both Depth and RGB frames in 30fps
+    #     set_datamode(camera, mode='PsDepthAndRGB_30')
+
+    #     # set RGB resoultion: (640, 280), (1280, 720), (640, 360)
+    #     set_resolution(camera, resol='PsRGB_Resolution_640_480')  
+
+    #     # set depth range: near, mid, far
+    #     set_range(camera, range='far')
+
+    #     return camera
+
+    # # start depth camera
+    # cfg, _ = parse_args_sensors()
     # camera = start_depth(cfg)
-    # time.sleep(1)
 
     # read_try_times = 100
     # while read_try_times > 0:
@@ -92,13 +137,13 @@ def start_sensors():
     #         print("Ps2_ReadNextFrame successful")
     #         break
     #     read_try_times -= 1
-    #     time.sleep(1)
-
     # if depth_ret != 0:
     #     print("Depth camera not connected.")
     #     return jsonify({"status": "Depth No Data Read Out"}), 500
 
-    asyncio.run(bleak_central_mac.main(socketio))  # Pass the SocketIO instance
+    # asyncio.run(bleak_central_mac.main(socketio, emg_queue, stop_events["emg"]))  # Pass the SocketIO instance
+    # time.sleep(20)
+
     
     return jsonify({"status": "Sensors started successfully"}), 200
 
@@ -124,13 +169,13 @@ def start_collection():
     with open(label_path, 'w') as f:
         f.write(pattern)
 
-    # if not is_collecting["depth_and_rgb"]:
-    #     is_collecting["depth_and_rgb"] = True
-    #     stop_events["depth_and_rgb"].clear()
-    #     thread1 = threading.Thread(target=save_depthandrgb_web, args=(cfg, camera, stop_events["depth_and_rgb"], current_sec))
-    #     thread1.start()
-    #     threads.append(thread1)
-    #     logger.info(f"save_depth_rgb thread collection")
+    if not is_collecting["depth_and_rgb"]:
+        is_collecting["depth_and_rgb"] = True
+        stop_events["depth_and_rgb"].clear()
+        thread1 = threading.Thread(target=save_depthandrgb_web, args=(cfg, camera, stop_events["depth_and_rgb"], current_sec))
+        thread1.start()
+        threads.append(thread1)
+        logger.info(f"save_depth_rgb thread collection")
         
     if not is_collecting["emg"]:
         is_collecting["emg"] = True
