@@ -16,6 +16,14 @@
             width: 100%;
             height: 400px;
         }
+        .chart-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* 两列 */
+            grid-template-rows: 1fr 1fr; /* 两行 */
+            gap: 10px; /* 网格间距 */
+            width: 100%; /* 容器宽度 */
+            height: 800px; /* 容器高度 */
+        }
         .form-group {
             margin-right: 20px;
         }
@@ -85,8 +93,14 @@
             <div class="card-header">
                 <h2 class="h5">Visualization</h2>
             </div>
-            <div class="card-body">
+            <!-- <div class="card-body">
                 <div id="emgChart"></div>
+            </div> -->
+            <div class="chart-grid">
+                <div id="chartBiceps" style="width: 100%; height: 100%;"></div>
+                <div id="chartDeltoids" style="width: 100%; height: 100%;"></div>
+                <div id="chartLatiss" style="width: 100%; height: 100%;"></div>
+                <div id="chartTrapezius" style="width: 100%; height: 100%;"></div>
             </div>
         </div>
 
@@ -111,13 +125,18 @@
 
     <div id="toast-container" aria-live="polite" aria-atomic="true"></div>
 
+
     <script>
         $(document).ready(function() {
             // 初始化ECharts实例
-            let emgChart = echarts.init(document.getElementById('emgChart'));
-
+            let charts = {
+            'Biceps': echarts.init(document.getElementById('chartBiceps')),
+            'Deltoids': echarts.init(document.getElementById('chartDeltoids')),
+            'Latiss': echarts.init(document.getElementById('chartLatiss')),
+            'Trapezius': echarts.init(document.getElementById('chartTrapezius'))
+        };
             // 初始化图表的配置和数据
-            let option = {
+            let optionTemplate = {
                 tooltip: {
                     trigger: 'axis',
                     formatter: function (params) {
@@ -138,7 +157,9 @@
                         formatter: function(value) {
                             let date = new Date(value);
                             return date.toLocaleTimeString();
-                        }
+                        }, 
+                        rotate: 30,
+                        margin: 15
                     }
                 },
                 yAxis: {
@@ -151,7 +172,10 @@
                 },
                 series: []
             };
-            emgChart.setOption(option);
+            Object.keys(charts).forEach(function(group) {
+                charts[group].setOption(JSON.parse(JSON.stringify(optionTemplate)));
+            });
+
             
             $('#startSensorsButton').click(function() {
                 $.ajax({
@@ -184,7 +208,7 @@
                 if (subjectName && action) {
                     $.get('/start_collection', { subject: subjectName, action: action, pattern: pattern }, function(data) {
                         showToast(data.status, 'success');
-                        window.open('/countdown', 'newwindow', 'width=600,height=600,left=400,top=400');
+                        window.open('/countdown', 'newwindow', 'width=600,height=300,left=400,top=400');
                     });
                 } else {
                     showToast("Please enter both subject name and action.", 'warning');
@@ -228,23 +252,19 @@
             const MAX_TIME_DIFF = 10000; // 10秒
 
             const macToMuscle = {
-            'E4:65:B8:14:BA:9A': { id: '01', name: 'L_Biceps' },
-            'D4:8A:FC:C5:8B:B2': { id: '02', name: 'R_Biceps' },
-            'E4:65:B8:14:79:5E': { id: '03', name: 'L_Deltoid' }, // 确保MAC地址是大写
-            'D4:8A:FC:C5:A5:CA': { id: '04', name: 'R_Deltoid' },
-            'D4:8A:FC:C4:B0:C6': { id: '05', name: 'L_Latiss' },
-            'D4:8A:FC:C5:AB:32': { id: '06', name: 'R_Latiss' },
-            'D4:8A:FC:C5:9E:12': { id: '07', name: 'L_Trapezius' },
-            'D4:8A:FC:C5:06:7E': { id: '08', name: 'R_Trapezius' }
+            'E4:65:B8:14:BA:9A': { id: '01', name: 'L_Biceps', group: 'Biceps' },
+            'D4:8A:FC:C5:8B:B2': { id: '02', name: 'R_Biceps', group: 'Biceps' },
+            'E4:65:B8:14:79:5E': { id: '03', name: 'L_Deltoid', group: 'Deltoids' },
+            'D4:8A:FC:C5:A5:CA': { id: '04', name: 'R_Deltoid', group: 'Deltoids' },
+            'D4:8A:FC:C4:B0:C6': { id: '05', name: 'L_Latiss', group: 'Latiss' },
+            'D4:8A:FC:C5:AB:32': { id: '06', name: 'R_Latiss', group: 'Latiss' },
+            'D4:8A:FC:C5:9E:12': { id: '07', name: 'L_Trapezius', group: 'Trapezius' },
+            'D4:8A:FC:C5:06:7E': { id: '08', name: 'R_Trapezius', group: 'Trapezius' }
         };
 
-            socket.on('emg_data', function(data) {
+        socket.on('emg_data', function(data) {
                 console.log(data);
                 var timestamp = new Date(data.timestamp);
-                // var macAddress = data.mac;
-                // var emgValue = parseFloat(data.value);
-                // var source = data.mac;
-                var now = new Date();
 
                 if (!emgValues[data.mac]) {
                     emgValues[data.mac] = [];
@@ -253,41 +273,48 @@
                 var queue = emgValues[data.mac];
                 const MAX_QUEUE_SIZE = 100;
                 queue.push([timestamp, data.value]);
-                console.log('Queue length: ');
-                console.log(queue.length);
-                
+                console.log('Queue length: ', queue.length);
+
                 if (queue.length > MAX_QUEUE_SIZE) {
                     queue.shift();
-                    console.log('Queue is full, shift the first element');                    
+                    console.log('Queue is full, shift the first element');
                 }
 
-                let series = Object.keys(emgValues).map((mac, index) => {
-                    let muscleInfo = macToMuscle[mac] || { id: 'Unknown', name: 'Unknown Muscle' };
-                    return {
+                let groupedSeries = {};
+                Object.keys(emgValues).forEach(mac => {
+                    let group = macToMuscle[mac].group;
+                    if (!groupedSeries[group]) {
+                        groupedSeries[group] = {
+                            legendData: [],
+                            series: []
+                        };
+                    }
+                    let muscleInfo = macToMuscle[mac];
+                    groupedSeries[group].legendData.push(`${muscleInfo.name} (ID: ${muscleInfo.id})`);
+                    groupedSeries[group].series.push({
                         name: `${muscleInfo.name} (ID: ${muscleInfo.id})`,
                         type: 'line',
                         data: emgValues[mac],
                         sampling: 'lttb',
                         symbol: 'none'
-                    };
+                    });
                 });
 
-                let legendData = Object.keys(emgValues).map(mac => {
-                    let muscleInfo = macToMuscle[mac] || { id: 'Unknown', name: 'Unknown Muscle' };
-                    return `${muscleInfo.name} (ID: ${muscleInfo.id})`;
-                });
-                let minTime = new Date(timestamp.getTime() - MAX_TIME_DIFF);
-                let maxTime = timestamp;
+                Object.keys(groupedSeries).forEach(group => {
+                    let chart = charts[group]; // Assuming you have a separate chart instance for each group
+                    let minTime = new Date(timestamp.getTime() - MAX_TIME_DIFF);
+                    let maxTime = timestamp;
 
-                emgChart.setOption({
-                    legend: {
-                        data: legendData
-                    },
-                    series: series,
-                    xAxis: {
-                        min: minTime, // 显示过去10秒的数据
-                        max: maxTime, 
-                    }
+                    chart.setOption({
+                        legend: {
+                            data: groupedSeries[group].legendData
+                        },
+                        series: groupedSeries[group].series,
+                        xAxis: {
+                            min: minTime,
+                            max: maxTime
+                        }
+                    });
                 });
             });
 

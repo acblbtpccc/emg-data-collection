@@ -101,6 +101,7 @@ def start_sensors():
         print("Depth camera not connected.")
         return jsonify({"status": "Depth No Data Read Out"}), 500
 
+    stop_events["emg"].set()
     asyncio.run(bleak_central_mac.main(socketio, emg_queue, stop_events["emg"])) # Pass the SocketIO instance
     
     return jsonify({"status": "Sensors started successfully"}), 200
@@ -181,10 +182,28 @@ def stop_collection():
 def countdown():
     return render_template('countdown.html')
     
+async def disconnect_all_clients():
+    for client in bleak_central_mac.vec_myo_ware_clients:
+        try:
+            await client.disconnect()
+            print(f"Disconnected from {client.address}")
+        except Exception as e:
+            print(f"Error disconnecting from {client.address}: {e}")
+
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=5002, debug=True)
-
-
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    try:
+        # Start socketio in the main thread
+        socketio.run(app, host='0.0.0.0', port=5002, debug=False)
+    except KeyboardInterrupt:
+        print("Shutting down gracefully...")
+        for event in stop_events.values():
+            event.set()
+        for thread in threads:
+            thread.join()
+        loop.run_until_complete(disconnect_all_clients())
+        loop.close()
 # # collect_data_wed_fixtime.py
 # from flask import Flask, request, render_template, jsonify
 # import json
