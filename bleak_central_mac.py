@@ -125,7 +125,7 @@ def create_notify_callback(client, emg_queue, stop_event):
                     'value': value
                 })
                 
-                print('timestamp:', timestamp, 'mac:', address, 'value:', value)
+                # print('timestamp:', timestamp, 'mac:', address, 'value:', value)
                 # print(json.dumps(on_notify_call_buffer))
 
                 # Clear the document for the next notification
@@ -201,6 +201,10 @@ async def fetch_connection_params():
             await asyncio.sleep(1)
     return False
 
+async def on_disconnected(client):
+    while True:
+        print(f"Device {client.address} disconnected")
+
 async def connect_to_shields(emg_queue, stop_event):
     global vec_myo_ware_clients
     print("Start Connect to MyoWare Wireless Shields...")
@@ -218,9 +222,10 @@ async def connect_to_shields(emg_queue, stop_event):
             shield_connected = False
             shield_connected_try_times = 0
 
-            while not shield_connected and shield_connected_try_times < 5:
+            while not shield_connected and shield_connected_try_times < 10:
                 try:
                     client = BleakClient(address)
+                    client.set_disconnected_callback(on_disconnected)  # Set the disconnect callback
                     await client.connect()
                     shield_connected = client.is_connected
                     if shield_connected:
