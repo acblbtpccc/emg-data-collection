@@ -182,28 +182,40 @@ def stop_collection():
 def countdown():
     return render_template('countdown.html')
     
-async def disconnect_all_clients():
-    for client in bleak_central_mac.vec_myo_ware_clients:
-        try:
-            await client.disconnect()
-            print(f"Disconnected from {client.address}")
-        except Exception as e:
-            print(f"Error disconnecting from {client.address}: {e}")
+# async def disconnect_all_clients():
+#     for client in bleak_central_mac.vec_myo_ware_clients:
+#         try:
+#             await client.disconnect()
+#             print(f"Disconnected from {client.address}")
+#         except Exception as e:
+#             print(f"Error disconnecting from {client.address}: {e}")
+
+def manage_bluetooth_service():
+    try:
+        subprocess.run(["systemctl", "stop", "bluetooth.service"], check=True)
+        print("Bluetooth service stopped.")
+        time.sleep(11)  # wait for 3 seconds
+        subprocess.run(["systemctl", "restart", "bluetooth.service"], check=True)
+        print("Bluetooth service restarted.")
+    except subprocess.CalledProcessError as e:
+        print(f"Failed to manage Bluetooth service: {e}")
 
 if __name__ == '__main__':
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
+    # loop = asyncio.new_event_loop()
+    # asyncio.set_event_loop(loop)
     try:
         # Start socketio in the main thread
         socketio.run(app, host='0.0.0.0', port=5002, debug=False)
     except KeyboardInterrupt:
         print("Shutting down gracefully...")
+        manage_bluetooth_service()
         for event in stop_events.values():
             event.set()
         for thread in threads:
             thread.join()
-        loop.run_until_complete(disconnect_all_clients())
-        loop.close()
+        # loop.run_until_complete(disconnect_all_clients())
+        
+        # loop.close()
 # # collect_data_wed_fixtime.py
 # from flask import Flask, request, render_template, jsonify
 # import json

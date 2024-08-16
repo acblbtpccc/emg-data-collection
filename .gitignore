@@ -4,3 +4,10 @@
 data/
 
 *.pyc
+
+figs/
+
+archive/
+
+API_old/
+

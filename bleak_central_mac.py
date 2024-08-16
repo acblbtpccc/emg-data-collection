@@ -239,7 +239,7 @@ async def connect_to_shields(emg_queue, stop_event):
                 await asyncio.sleep(0.2)
 
             if not shield_connected:
-                print(f"Trials to connect to the shield exceed 5 times, give up connect.")
+                print(f"Trials to connect to the shield exceed 10 times, give up connect.")
 
             if shield_connected:
                 try:

@@ -184,10 +184,10 @@ def collect_depthandrgb(cfg, camera):
 
                 # init video writer
                 vout_d = cv2.VideoWriter()
-                vout_d.open(depth_video_path, cv2.VideoWriter_fourcc(*'mp4v'), cfg.CMAERA.FPS, (cfg.CMAERA.WIDTH, cfg.CMAERA.HEIGHT), isColor=False)
+                vout_d.open(depth_video_path, cv2.VideoWriter_fourcc(*'avc1'), cfg.CMAERA.FPS, (cfg.CMAERA.WIDTH, cfg.CMAERA.HEIGHT), isColor=False)
 
                 vout_rgb = cv2.VideoWriter()
-                vout_rgb.open(rgb_video_path, cv2.VideoWriter_fourcc(*'mp4v'), cfg.CMAERA.FPS, (cfg.CMAERA.WIDTH, cfg.CMAERA.HEIGHT), isColor=True)
+                vout_rgb.open(rgb_video_path, cv2.VideoWriter_fourcc(*'avc1'), cfg.CMAERA.FPS, (cfg.CMAERA.WIDTH, cfg.CMAERA.HEIGHT), isColor=True)
 
                 # init csv writer
                 with open(frame_info_path, "a") as frame_info:
