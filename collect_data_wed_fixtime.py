@@ -101,7 +101,7 @@ def start_sensors():
         print("Depth camera not connected.")
         return jsonify({"status": "Depth No Data Read Out"}), 500
 
-    asyncio.run(bleak_central_mac.main(socketio, emg_queue, stop_events["emg"])) # Pass the SocketIO instance
+    # asyncio.run(bleak_central_mac.main(socketio, emg_queue, stop_events["emg"])) # Pass the SocketIO instance
     
     return jsonify({"status": "Sensors started successfully"}), 200
 
@@ -119,11 +119,15 @@ def start_collection():
     if not subject or not action or not pattern:
         return jsonify({"status": "Missing subject or action or Description"}), 400
     
-    cfg, _ = parse_args(subject, action)
-    cfg = prepare_output_dir(cfg)
-
     current_sec = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-    label_path = os.path.join(cfg.label_dir, current_sec + '.txt')
+    base_path = f"./{DATA_DIR}/{subject}/{action}"
+    sample_folder_name = f'S{subject}-A{action}-P{pattern}-{current_sec}'
+    sample_folder_path = os.path.join(base_path, sample_folder_name)
+    os.makedirs(sample_folder_path, exist_ok=True)
+
+    cfg, _ = parse_args(subject, action)
+    # cfg = prepare_output_dir(cfg)
+    label_path = os.path.join(sample_folder_path, sample_folder_name + '-text.txt')
 
     # Write the label value to the label_path.txt file
     with open(label_path, 'w') as f:
@@ -132,18 +136,18 @@ def start_collection():
     if not is_collecting["depth_and_rgb"]:
         is_collecting["depth_and_rgb"] = True
         stop_events["depth_and_rgb"].clear()
-        thread1 = threading.Thread(target=save_depthandrgb_web, args=(cfg, camera, stop_events["depth_and_rgb"], current_sec))
+        thread1 = threading.Thread(target=save_depthandrgb_web, args=(cfg, camera, stop_events["depth_and_rgb"], sample_folder_path, sample_folder_name))
         thread1.start()
         threads.append(thread1)
         logger.info(f"save_depth_rgb thread collection")
         
-    if not is_collecting["emg"]:
-        is_collecting["emg"] = True
-        stop_events["emg"].clear()
-        thread2 = threading.Thread(target=save_emg_web, args=(cfg, stop_events["emg"], current_sec, emg_queue))
-        thread2.start()
-        threads.append(thread2)
-        logger.info(f"save_emg_web thread collection")
+    # if not is_collecting["emg"]:
+    #     is_collecting["emg"] = True
+    #     stop_events["emg"].clear()
+    #     thread2 = threading.Thread(target=save_emg_web, args=(cfg, stop_events["emg"], sample_folder_path, sample_folder_name, emg_queue))
+    #     thread2.start()
+    #     threads.append(thread2)
+    #     logger.info(f"save_emg_web thread collection")
     
     return jsonify({"status": "Data collection started"})
 

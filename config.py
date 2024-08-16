@@ -17,6 +17,7 @@ cfg.EMG = True
 cfg.FREQUENCY= 10  
 cfg.SUBJECT = 'TestP1'
 cfg.ACTION = 'TestA1'
+cfg.PATTERN = '1'
 cfg.SERIALPORT = '/dev/tty.usbserial-140'
 cfg.BAUDRATE = '115200'
 

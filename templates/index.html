@@ -208,7 +208,7 @@
                 if (subjectName && action) {
                     $.get('/start_collection', { subject: subjectName, action: action, pattern: pattern }, function(data) {
                         showToast(data.status, 'success');
-                        location.reload();
+                        // location.reload();
                         window.open('/countdown', 'newwindow', 'width=600,height=300,left=400,top=400');
                     });
                 } else {

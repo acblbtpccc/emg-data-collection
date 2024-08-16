@@ -27,8 +27,7 @@ def prepare_output_dir(cfg):
     os.makedirs(cfg.label_dir, exist_ok=True)
     return cfg
 
-def save_depthandrgb_web(cfg, camera, stop_event, current_sec):
-    print("stop_event: ", stop_event)
+def save_depthandrgb_web(cfg, camera, stop_event, sample_folder_path, sample_folder_name):
     _, depthrange = camera.Ps2_GetDepthRange()
     _, depth_max, value_min, value_max = camera.Ps2_GetMeasuringRange(PsDepthRange(depthrange.value))
     print("depth_max, value_min, value_max: ", depth_max, value_min, value_max)
@@ -40,17 +39,17 @@ def save_depthandrgb_web(cfg, camera, stop_event, current_sec):
     # current_sec = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
     # init path of video file and frame info csv
-    depth_video_path = os.path.join(cfg.depth_dir, current_sec + '.mp4')
-    rgb_video_path = os.path.join(cfg.rgb_dir, current_sec + '.mp4')
-    frame_info_path = os.path.join(cfg.rgb_dir, current_sec + '.csv')
+    depth_video_path = os.path.join(sample_folder_path, sample_folder_name + '-depth.mp4')
+    rgb_video_path = os.path.join(sample_folder_path, sample_folder_name + '-rgb.mp4')
+    frame_info_path = os.path.join(sample_folder_path, sample_folder_name + '-frame.csv')
     print("New video saving path: {:s}".format(depth_video_path))
 
     # init video writer
     vout_d = cv2.VideoWriter()
-    vout_d.open(depth_video_path, cv2.VideoWriter_fourcc(*'mp4v'), cfg.CMAERA.FPS, (cfg.CMAERA.HEIGHT, cfg.CMAERA.WIDTH), isColor=False)
+    vout_d.open(depth_video_path, cv2.VideoWriter_fourcc(*'avc1'), cfg.CMAERA.FPS, (cfg.CMAERA.HEIGHT, cfg.CMAERA.WIDTH), isColor=False)
 
     vout_rgb = cv2.VideoWriter()
-    vout_rgb.open(rgb_video_path, cv2.VideoWriter_fourcc(*'mp4v'), cfg.CMAERA.FPS, (cfg.CMAERA.HEIGHT, cfg.CMAERA.WIDTH), isColor=True)
+    vout_rgb.open(rgb_video_path, cv2.VideoWriter_fourcc(*'avc1'), cfg.CMAERA.FPS, (cfg.CMAERA.HEIGHT, cfg.CMAERA.WIDTH), isColor=True)
 
     # init csv writer
     with open(frame_info_path, "a") as frame_info:
@@ -99,7 +98,7 @@ def save_depthandrgb_web(cfg, camera, stop_event, current_sec):
         vout_rgb.release()
 
  
-def save_emg_web(cfg, stop_event, current_sec, emg_queue):
+def save_emg_web(cfg, stop_event, sample_folder_path, sample_folder_name, emg_queue):
     # MAC address to muscle mapping
     mac_to_info = {
     'E4:65:B8:14:BA:9A': ('01', 'L_Biceps'),
@@ -113,7 +112,7 @@ def save_emg_web(cfg, stop_event, current_sec, emg_queue):
 }
     logger.debug(f"stop_event: {stop_event}")
 
-    emg_path = os.path.join(cfg.emg_dir, current_sec + '.csv')
+    emg_path = os.path.join(sample_folder_path, sample_folder_name + '-emg.csv')
     header = ['timestamp', 'EMGID', 'mac_address', 'muscle', 'emg_value']
 
     with open(emg_path, 'a', newline='') as emg_data:
@@ -147,7 +146,6 @@ def save_emg_web(cfg, stop_event, current_sec, emg_queue):
                 continue
             logger.debug("save_emg_web one loop finished")
 
-        # 在退出之前将剩余的数据写入文件
         if buffer:
             with open(emg_path, 'a', newline='') as emg_data:
                 writer = csv.writer(emg_data)
