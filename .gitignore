@@ -11,3 +11,6 @@ archive/
 
 API_old/
 
+*.npz
+
+
