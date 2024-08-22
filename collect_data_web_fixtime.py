@@ -147,26 +147,36 @@ def stop_collection():
 def countdown():
     return render_template('countdown.html')
 
-def disconnect_all_clients():
+
+disconnection_in_progress = False   
+
+async def disconnect_all_clients():
     print("Attempting to disconnect all clients...")
     try:
-        loop = asyncio.get_running_loop()
-    except RuntimeError:  
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-
-    try:
-        tasks = [loop.create_task(client.disconnect()) for client in bleak_central_mac.vec_myo_ware_clients]
-        loop.run_until_complete(asyncio.gather(*tasks))
+        tasks = [client.disconnect() for client in bleak_central_mac.vec_myo_ware_clients if client.is_connected]
+        await asyncio.gather(*tasks)
         print("All Bluetooth clients have been disconnected.")
+        
     except Exception as e:
         print(f"Failed to disconnect clients: {e}")
 
+def run_disconnect():
+    global disconnection_in_progress
+    if disconnection_in_progress:
+        return
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    try:
+        loop.run_until_complete(disconnect_all_clients())
+        disconnection_in_progress = True
+    finally:
+        loop.close()
+        disconnection_in_progress = False
+        os._exit(1)
 
 def signal_handler(sig, frame):
     print('You pressed Ctrl+C!')
-    disconnect_all_clients()
-    sys.exit(0)
+    run_disconnect()
 
 if __name__ == '__main__':
     signal.signal(signal.SIGINT, signal_handler)

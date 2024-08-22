@@ -6,10 +6,10 @@ from datetime import datetime, timezone, timedelta
 import threading
 import requests
 from bleak import BleakClient, BleakScanner
-
+import os
 # Debug parameters
 debug_logging = True
-running_mode = "standalone"
+running_mode = "up-to-host"
 needed_client_numbers = 8
 
 vec_myo_ware_shields_lock = threading.Lock()
@@ -35,10 +35,6 @@ myo_ware_characteristic_uuid = "f3a56edf-8f1e-4533-93bf-5601b2e91308"
 on_notify_call_buffer = {}
 notify_buffer_lock = threading.Lock()  # Lock for accessing on_notify_call_buffer
 serial_pre_values = [0] * 10
-
-# WiFi credentials
-ssid = "boluo-wifi"
-password = "54448449"
 
 host = "cdn.1f2.net"
 port = 80
@@ -172,34 +168,34 @@ async def on_advertised_device(device, advertisement_data):
                 if debug_logging:
                     print(f"Duplicate Shield found: {device.address}")
 
-async def fetch_connection_params():
-    global got_connect_config, running_mode, enable_connection_params, needed_client_numbers
+# async def fetch_connection_params():
+#     global got_connect_config, running_mode, enable_connection_params, needed_client_numbers
 
-    connect_config_attempts = 0
-    while not got_connect_config and connect_config_attempts <= 5:
-        try:
-            response = requests.get(f"http://{host}:{port}{config_path}")
-            if response.status_code == 200:
-                connect_config_json = response.json()
+#     connect_config_attempts = 0
+#     while not got_connect_config and connect_config_attempts <= 5:
+#         try:
+#             response = requests.get(f"http://{host}:{port}{config_path}")
+#             if response.status_code == 200:
+#                 connect_config_json = response.json()
 
-                running_mode = connect_config_json["runningMode"]
-                enable_connection_params = connect_config_json["enableconnectionParams"]
-                needed_client_numbers = connect_config_json["NeededClientNumbers"]
+#                 running_mode = connect_config_json["runningMode"]
+#                 enable_connection_params = connect_config_json["enableconnectionParams"]
+#                 needed_client_numbers = connect_config_json["NeededClientNumbers"]
 
-                connection_params.min_interval = connect_config_json["minInterval"]
-                connection_params.max_interval = connect_config_json["maxInterval"]
-                connection_params.latency = connect_config_json["latency"]
-                connection_params.timeout = connect_config_json["timeout"]
-                connection_params.scan_interval = connect_config_json["scanInterval"]
-                connection_params.scan_window = connect_config_json["scanWindow"]
+#                 connection_params.min_interval = connect_config_json["minInterval"]
+#                 connection_params.max_interval = connect_config_json["maxInterval"]
+#                 connection_params.latency = connect_config_json["latency"]
+#                 connection_params.timeout = connect_config_json["timeout"]
+#                 connection_params.scan_interval = connect_config_json["scanInterval"]
+#                 connection_params.scan_window = connect_config_json["scanWindow"]
 
-                got_connect_config = True
-                return True
-        except Exception as e:
-            print(f"Error fetching connection parameters: {e}")
-            connect_config_attempts += 1
-            await asyncio.sleep(1)
-    return False
+#                 got_connect_config = True
+#                 return True
+#         except Exception as e:
+#             print(f"Error fetching connection parameters: {e}")
+#             connect_config_attempts += 1
+#             await asyncio.sleep(1)
+#     return False
 
 async def on_disconnected(client):
     while True:
@@ -212,20 +208,16 @@ async def connect_to_shields(emg_queue, stop_event):
     while len(vec_myo_ware_clients) < needed_client_numbers:
         print(f"NeededClientNumbers: {needed_client_numbers}")
         print(f"Current Client Number: {len(vec_myo_ware_clients)}")
-
         for address in vec_myo_ware_shields:
-            print(f"Current trying to connect address: {address}")
-
             if address in [client.address for client in vec_myo_ware_clients]:
                 continue
-
+            print(f"Current trying to connect address: {address}")
             shield_connected = False
             shield_connected_try_times = 0
 
             while not shield_connected and shield_connected_try_times < 10:
                 try:
                     client = BleakClient(address)
-                    client.set_disconnected_callback(on_disconnected)  # Set the disconnect callback
                     await client.connect()
                     shield_connected = client.is_connected
                     if shield_connected:
@@ -248,6 +240,22 @@ async def connect_to_shields(emg_queue, stop_event):
                     print("Subscribed to notifications")
                 except Exception as e:
                     print(f"Error subscribing to notifications: {e}")
+    
+    return True
+
+async def monitor_connections(check_interval=30):
+    global vec_myo_ware_clients
+
+    while True:
+        await asyncio.sleep(check_interval)
+        for client in vec_myo_ware_clients:
+            if not client.is_connected: # if one client disconnect
+                print('Stopping the program due to a sensor disconnection!', client.address)
+                tasks = [client.disconnect() for client in vec_myo_ware_clients if client.is_connected] # disconnect all client
+                await asyncio.gather(*tasks)
+                os._exit(1)
+            else:
+                print("all client still connected")
 
 async def main(socketio_instance, emg_queue, stop_event):
     global ntp_time, boot_time_millis, socketio
@@ -259,10 +267,10 @@ async def main(socketio_instance, emg_queue, stop_event):
     print(f"NTP time obtained: {datetime.fromtimestamp(ntp_time)}")
 
     # Fetch ConnectionParams from the URL
-    if await fetch_connection_params():
-        print("Connection parameters fetched successfully.")
-    else:
-        print("Failed to fetch connection parameters.")
+    # if await fetch_connection_params():
+    #     print("Connection parameters fetched successfully.")
+    # else:
+    #     print("Failed to fetch connection parameters.")
 
     # Start scanning for MyoWare Wireless Shields
     if debug_logging:
@@ -275,12 +283,17 @@ async def main(socketio_instance, emg_queue, stop_event):
 
     print("Scan done!")
     print(f"Found {len(vec_myo_ware_shields)} MyoWare Wireless Shields")
+    if len(vec_myo_ware_shields)!= needed_client_numbers:
+        print('sensor didnot found complete!!!!!!!!!')
+        os._exit(1)
 
     if not vec_myo_ware_shields:
         print("No MyoWare Wireless Shields found!")
         return
 
-    await connect_to_shields(emg_queue, stop_event)
+    connection_success = await connect_to_shields(emg_queue, stop_event)
+    if connection_success:
+        await asyncio.create_task(monitor_connections())
 
     while True:
         await asyncio.sleep(10)

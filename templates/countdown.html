@@ -47,7 +47,7 @@
             }
 
             // Play the initial beep sound at the start
-            playBeep(440, 200);
+            playBeep(220, 600);
 
             var interval = setInterval(function() {
                 countdownTime--;
@@ -58,7 +58,7 @@
                     $.get('/stop_collection', function(data) {
                         // showToast(data.status, 'success');
                     });
-                    playBeep(880, 600, function() { // Play a higher 880 Hz tone at the end with longer duration
+                    playBeep(440, 600, function() { 
                         window.opener.location.reload(); // Refresh the opener window
                         // Close the window after the final beep has played
                         window.close();

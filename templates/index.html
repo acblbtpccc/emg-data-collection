@@ -11,6 +11,9 @@
     <style>
         body {
             padding: 20px;
+            margin: 0;
+            box-sizing: border-box;
+            min-width: 1400px;
         }
         #emgChart {
             width: 100%;
@@ -18,11 +21,11 @@
         }
         .chart-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr; /* 两列 */
-            grid-template-rows: 1fr 1fr; /* 两行 */
+            grid-template-columns: 1fr 1fr 1fr 1fr; /* 4列 */
+            grid-template-rows: 1fr ; /* 1行 */
             gap: 10px; /* 网格间距 */
             width: 100%; /* 容器宽度 */
-            height: 800px; /* 容器高度 */
+            height: 300px; /* 容器高度 */
         }
         .form-group {
             margin-right: 20px;
@@ -127,6 +130,29 @@
 
 
     <script>
+        function saveInput(id) {
+            const element = document.getElementById(id);
+            element.addEventListener('input', function() {
+                localStorage.setItem(id, element.value);
+            });
+        }
+
+        function restoreInput(id) {
+            const savedValue = localStorage.getItem(id);
+            if (savedValue !== null) {
+                document.getElementById(id).value = savedValue;
+            }
+        }
+        // Run these functions for each input field
+        document.addEventListener('DOMContentLoaded', function() {
+            restoreInput('subjectName');
+            restoreInput('action');
+            restoreInput('pattern');
+
+            saveInput('subjectName');
+            saveInput('action');
+            saveInput('pattern');
+        });
         $(document).ready(function() {
             // 初始化ECharts实例
             let charts = {
@@ -147,6 +173,12 @@
                     axisPointer: {
                         animation: false
                     }
+                },
+                grid: {
+                    left: '20%',
+                    right: '5%',
+                    top: '10%',  // 增加顶部空间
+                    bottom: '10%' // 增加底部空间
                 },
                 xAxis: {
                     type: 'time',
@@ -208,7 +240,6 @@
                 if (subjectName && action) {
                     $.get('/start_collection', { subject: subjectName, action: action, pattern: pattern }, function(data) {
                         showToast(data.status, 'success');
-                        // location.reload();
                         window.open('/countdown', 'newwindow', 'width=600,height=300,left=400,top=400');
                     });
                 } else {
@@ -261,7 +292,7 @@
             'D4:8A:FC:C5:AB:32': { id: '06', name: 'R_Latiss', group: 'Latiss' },
             'D4:8A:FC:C5:9E:12': { id: '07', name: 'L_Trapezius', group: 'Trapezius' },
             'D4:8A:FC:C5:06:7E': { id: '08', name: 'R_Trapezius', group: 'Trapezius' }
-        };
+            };
 
         socket.on('emg_data', function(data) {
                 console.log(data);
@@ -291,13 +322,15 @@
                         };
                     }
                     let muscleInfo = macToMuscle[mac];
+                    let color = muscleInfo.name.startsWith('L_') ? '#00FF00' : '#0000FF';
                     groupedSeries[group].legendData.push(`${muscleInfo.name} (ID: ${muscleInfo.id})`);
                     groupedSeries[group].series.push({
                         name: `${muscleInfo.name} (ID: ${muscleInfo.id})`,
                         type: 'line',
                         data: emgValues[mac],
                         sampling: 'lttb',
-                        symbol: 'none'
+                        symbol: 'none',
+                        itemStyle:{color:color}
                     });
                 });
 
