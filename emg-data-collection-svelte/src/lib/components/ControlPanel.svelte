@@ -134,14 +134,14 @@
       countdownTime = countdownInput;
 
       speak('Start in');
-      await new Promise(r => setTimeout(r, 800));
+      await new Promise(r => setTimeout(r, 500));
 
-      countdownTime = countdownInput;
+      countdownTime = countdownInput - 1;
       speak(countdownTime.toString());
 
       const timer = setInterval(() => {
         countdownTime -= 1;
-        if (countdownTime > 0) {
+        if (countdownTime > 0 ) {
           speak(countdownTime.toString());
         } else {
           clearInterval(timer);

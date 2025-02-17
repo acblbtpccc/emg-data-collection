@@ -143,12 +143,12 @@
       const currentTime = Date.now();
       const minTime = currentTime - MAX_TIME_DIFF;
 
-      console.log('Chart update time range:', {
-        minTime,
-        minTimeFormatted: new Date(minTime).toLocaleTimeString(),
-        currentTime,
-        currentTimeFormatted: new Date(currentTime).toLocaleTimeString()
-      });
+      // console.log('Chart update time range:', {
+      //   minTime,
+      //   minTimeFormatted: new Date(minTime).toLocaleTimeString(),
+      //   currentTime,
+      //   currentTimeFormatted: new Date(currentTime).toLocaleTimeString()
+      // });
 
       Object.entries(groupedSeries).forEach(([group, data]) => {
         const chart = charts[group];
@@ -202,10 +202,10 @@
   }, 50, { leading: true, trailing: true });
 
   function handleEmgData(data) {
-    console.log('Raw timestamp from data:', data.timestamp);
+    // console.log('Raw timestamp from data:', data.timestamp);
     const timestamp = new Date(data.timestamp).getTime();
-    console.log('Converted timestamp:', timestamp);
-    console.log('Formatted time:', new Date(timestamp).toLocaleTimeString());
+    // console.log('Converted timestamp:', timestamp);
+    // console.log('Formatted time:', new Date(timestamp).toLocaleTimeString());
 
     if (!emgValues[data.mac]) {
       emgValues[data.mac] = [];

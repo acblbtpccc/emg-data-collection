@@ -8,3 +8,4 @@ flask_socketio
 ntplib
 requests
 bleak
+flask_cors

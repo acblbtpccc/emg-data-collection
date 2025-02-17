@@ -5,7 +5,7 @@
   import StatusPanel from "$lib/components/StatusPanel.svelte";
   import { io } from "socket.io-client";
 
-  const rootSocket = io('http://localhost:5173', {
+  const rootSocket = io({
     path: '/socket.io',
     transports: ['websocket'],
     reconnection: true,
@@ -13,7 +13,7 @@
     reconnectionDelay: 200
   });
 
-  const statusSocket = io('http://localhost:5173/sensor_status', {
+  const statusSocket = io('/sensor_status', {
     path: '/socket.io',
     transports: ['websocket'],
     reconnection: true,
@@ -21,7 +21,7 @@
     reconnectionDelay: 200
   });
 
-  const dataSocket = io('http://localhost:5173/sensor_data', {
+  const dataSocket = io('/sensor_data', {
     path: '/socket.io',
     transports: ['websocket'],
     reconnection: true,
