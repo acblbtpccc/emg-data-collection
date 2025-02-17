@@ -1,0 +1,98 @@
+{
+    "1": {
+        "P0": "Well done, Keep on!",
+        "P1": {
+            "Biceps Low": "Keep the upper arms tightly against the body; practice in front of a mirror to observe and correct shoulder positioning, keep the shoulders relaxed, and avoid shrugging.",
+            "Biceps High/Middle": "Keep the upper arms tightly against the body; perform some shoulder relaxation exercises before and after the practice"
+        },
+        "P2": {
+            "Latiss Middle": "Keep the body upright, avoid leaning back. You can practice near a wall, with your back slightly touching the wall, to control the leaning back of the body.",
+            "Latiss High": "Maintain an upright position, reduce reliance on the latissimus dorsi. It may be necessary to lower the resistance used to ensure that the correct muscle groups are engaged in the movement."
+        },
+        "P3": "Start with a lighter resistance band, and gradually increase the resistance once the correct technique is ensured. This helps prevent exacerbating the asymmetry due to excessive load.",
+        "P4": {
+           "Biceps Low":"Increase to full range of motion, ensuring a conscious effort to maximize bicep contraction with each curl.",
+           "Biceps High/Middle":"Use a band with less resistance to gradually enhance strength and control."
+        }
+       
+    },
+    "2": {
+        "P0": "Well done, Keep on!",
+        "P4": {
+            
+        },
+        "P5": {
+            "Deltoid Middle, Latiss Middle":"Engage in some balance training, such as standing on one leg, to enhance control over different parts of the body.",
+            "Deltoid High, Latiss High":"Reduce the resistance of the resistance band to decrease excessive muscle stimulation, allowing the body to better master the movement technique rather than just outputting strength."
+        },
+        "P6": {
+           "Deltoid Low, Biceps High/Middle":"Beginners should start with lower resistance, ensuring the technique is correct before gradually increasing resistance. Practice fully extending the arms laterally, avoiding forward or backward deviations.",
+           "Deltoid Middle, Latiss Middle":"Ensure arms are strictly raised laterally, avoiding pulling the elbows backward or forward."
+        },
+        "P7": {
+            "Deltoid High, Biceps High/Middle":"Reduce the resistance of the resistance band or use a lighter band to ensure that the elbow remains level with the wrist.",
+            "Deltoid Middle, Latiss Middle":"Perform some deltoid activation exercises before lateral raises, such as slightly lifting the shoulders and holding for a few seconds to enhance its activity. During the exercise, ensure that the arms are as straight as possible to minimize bending at the elbow."
+        }
+    },
+    "3": {
+        "P0": {
+            
+        },
+        
+        "P4": {
+           
+        },
+        "P5": {
+            
+        },
+        "P6": {
+           
+        },
+        "P7": {
+           
+        }
+        
+    },
+    "4": {
+        "P0": { 
+        },
+        "P2": { 
+        },
+        "P3": { 
+        },
+        "P4": { 
+        },
+        
+        "P8": { 
+        }
+        
+    },
+    "5": {
+        "P0": { 
+        },
+        "P3": { 
+        },
+        "P4": { 
+        }
+    },
+    "6": {
+        "P0": { 
+        },
+        "P1": { 
+        },
+        "P9": { 
+        },
+        "P10": { 
+        }
+    },
+    "7": {
+        "P0": { 
+        },
+        "P3": { 
+        },
+        "P4": { 
+        },
+        "P11": { 
+        }
+    }
+}

@@ -1,0 +1,1206 @@
+{
+    "1": {
+        "P0": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P1": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Under-activated",
+            "L_Deltoid": "Over-activated",
+            "R_Deltoid": "Over-activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Over-activated",
+            "R_Trapezius": "Over-activated"
+        },
+        "P2": {
+            "L_Biceps": "Under-activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Over-activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Over-activated",
+            "L_Trapezius": "Over-activated",
+            "R_Trapezius": "Over-activated"
+        },
+        "P3": {
+            "L_Biceps": "Under-activated",
+            "R_Biceps": "Under-activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Over-activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Over-activated",
+            "R_Trapezius": "Over-activated"
+        },
+        "P4": {
+            "L_Biceps": "Under-activated",
+            "R_Biceps": "Under-activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Under-activated",
+            "L_Latiss": "Under-activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Under-activated"
+        },
+        "P5": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P6": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P7": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P8": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P9": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P10": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P11": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P1,2": {
+            "L_Biceps": "Under-activated",
+            "R_Biceps": "Under-activated",
+            "L_Deltoid": "Over-activated",
+            "R_Deltoid": "Over-activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Over-activated",
+            "R_Trapezius": "Over-activated"
+        },
+        "P1,3": {
+            "L_Biceps": "Under-activated",
+            "R_Biceps": "Under-activated",
+            "L_Deltoid": "Over-activated",
+            "R_Deltoid": "Over-activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Over-activated",
+            "R_Trapezius": "Over-activated"
+        },
+        "P4,6": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P2,8": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P3,11": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        }
+    },
+    "2": {
+        "P0": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P1": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P2": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P3": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P4": {
+            "L_Biceps": "Under-activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Under-activated",
+            "R_Deltoid": "Over-activated",
+            "L_Latiss": "Under-activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P5": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Over-activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Over-activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Over-activated",
+            "L_Trapezius": "Over-activated",
+            "R_Trapezius": "Over-activated"
+        },
+        "P6": {
+            "L_Biceps": "Under-activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Over-activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P7": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Over-activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Over-activated",
+            "R_Trapezius": "Over-activated"
+        },
+        "P8": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P9": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P10": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P11": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P1,2": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P1,3": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P4,6": {
+            "L_Biceps": "Under-activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Under-activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Under-activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Under-activated",
+            "R_Trapezius": "Activated"
+        },
+        "P2,8": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P3,11": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        }
+    },
+    "3": {
+        "P0": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P1": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P2": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P3": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P4": {
+            "L_Biceps": "Over-activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Under-activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Under-activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P5": {
+            "L_Biceps": "Over-activated",
+            "R_Biceps": "Over-activated",
+            "L_Deltoid": "Over-activated",
+            "R_Deltoid": "Over-activated",
+            "L_Latiss": "Over-activated",
+            "R_Latiss": "Over-activated",
+            "L_Trapezius": "Over-activated",
+            "R_Trapezius": "Over-activated"
+        },
+        "P6": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Over-activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Under-activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P7": {
+            "L_Biceps": "Over-activated",
+            "R_Biceps": "Over-activated",
+            "L_Deltoid": "Over-activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Over-activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Over-activated",
+            "R_Trapezius": "Over-activated"
+        },
+        "P8": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P9": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P10": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P11": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P1,2": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P1,3": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P4,6": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Over-activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Under-activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Under-activated"
+        },
+        "P2,8": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P3,11": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        }
+    },
+    "4": {
+        "P0": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P1": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P2": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Over-activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Under-activated"
+        },
+        "P3": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Under-activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Under-activated",
+            "L_Trapezius": "Under-activated",
+            "R_Trapezius": "Under-activated"
+        },
+        "P4": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Under-activated",
+            "L_Deltoid": "Under-activated",
+            "R_Deltoid": "Under-activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Under-activated",
+            "L_Trapezius": "Under-activated",
+            "R_Trapezius": "Under-activated"
+        },
+        "P5": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P6": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P7": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P8": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Under-activated",
+            "L_Deltoid": "Under-activated",
+            "R_Deltoid": "Under-activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Under-activated",
+            "R_Trapezius": "Under-activated"
+        },
+        "P9": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P10": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P11": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P1,2": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P1,3": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P4,6": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P2,8": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Under-activated",
+            "L_Deltoid": "Under-activated",
+            "R_Deltoid": "Under-activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Under-activated",
+            "L_Trapezius": "Under-activated",
+            "R_Trapezius": "Under-activated"
+        },
+        "P3,11": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        }
+    },
+    "5": {
+        "P0": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P1": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P2": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P3": {
+            "L_Biceps": "Under-activated",
+            "R_Biceps": "Under-activated",
+            "L_Deltoid": "Under-activated",
+            "R_Deltoid": "Under-activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P4": {
+            "L_Biceps": "Under-activated",
+            "R_Biceps": "Under-activated",
+            "L_Deltoid": "Under-activated",
+            "R_Deltoid": "Under-activated",
+            "L_Latiss": "Over-activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Under-activated",
+            "R_Trapezius": "Under-activated"
+        },
+        "P5": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P6": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P7": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P8": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P9": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P10": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P11": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P1,2": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P1,3": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P4,6": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P2,8": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P3,11": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        }
+    },
+    "6": {
+        "P0": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P1": {
+            "L_Biceps": "Under-activated",
+            "R_Biceps": "Under-activated",
+            "L_Deltoid": "Over-activated",
+            "R_Deltoid": "Over-activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Under-activated",
+            "L_Trapezius": "Over-activated",
+            "R_Trapezius": "Over-activated"
+        },
+        "P2": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P3": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P4": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P5": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P6": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P7": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P8": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P9": {
+            "L_Biceps": "Over-activated",
+            "R_Biceps": "Under-activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Over-activated",
+            "R_Trapezius": "Over-activated"
+        },
+        "P10": {
+            "L_Biceps": "Under-activated",
+            "R_Biceps": "Under-activated",
+            "L_Deltoid": "Under-activated",
+            "R_Deltoid": "Under-activated",
+            "L_Latiss": "Under-activated",
+            "R_Latiss": "Under-activated",
+            "L_Trapezius": "Under-activated",
+            "R_Trapezius": "Under-activated"
+        },
+        "P11": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P1,2": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P1,3": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P4,6": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P2,8": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P3,11": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        }
+    },
+    "7": {
+        "P0": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P1": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P2": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P3": {
+            "L_Biceps": "Under-activated",
+            "R_Biceps": "Under-activated",
+            "L_Deltoid": "Under-activated",
+            "R_Deltoid": "Under-activated",
+            "L_Latiss": "Under-activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Under-activated",
+            "R_Trapezius": "Under-activated"
+        },
+        "P4": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Under-activated",
+            "L_Deltoid": "Under-activated",
+            "R_Deltoid": "Under-activated",
+            "L_Latiss": "Under-activated",
+            "R_Latiss": "Under-activated",
+            "L_Trapezius": "Under-activated",
+            "R_Trapezius": "Under-activated"
+        },
+        "P5": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P6": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P7": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P8": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P9": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P10": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P11": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Over-activated",
+            "L_Trapezius": "Under-activated",
+            "R_Trapezius": "Under-activated"
+        },
+        "P1,2": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P1,3": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P4,6": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P2,8": {
+            "L_Biceps": "Activated",
+            "R_Biceps": "Activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Activated",
+            "L_Latiss": "Activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Activated",
+            "R_Trapezius": "Activated"
+        },
+        "P3,11": {
+            "L_Biceps": "Under-activated",
+            "R_Biceps": "Under-activated",
+            "L_Deltoid": "Activated",
+            "R_Deltoid": "Under-activated",
+            "L_Latiss": "Under-activated",
+            "R_Latiss": "Activated",
+            "L_Trapezius": "Under-activated",
+            "R_Trapezius": "Under-activated"
+        }
+    }
+}

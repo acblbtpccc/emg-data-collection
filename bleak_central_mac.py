@@ -7,6 +7,8 @@ import threading
 import requests
 from bleak import BleakClient, BleakScanner
 import os
+from threading import Lock
+
 # Debug parameters
 debug_logging = True
 running_mode = "up-to-host"
@@ -51,18 +53,52 @@ class ConnectionParams:
 
 connection_params = ConnectionParams()
 
-# NTP client setup
+# 更新NTP服务器配置（区分协议类型）
+NTP_SERVERS = [
+    # 标准NTP协议服务器（UDP 123端口）
+    {"host": "ntp.aliyun.com", "type": "ntp"},
+    {"host": "ntp1.tencent.com", "type": "ntp"},
+    {"host": "time.amazonaws.com", "type": "ntp"},
+    # HTTP时间API服务
+    {"host": "worldtimeapi.org/api/timezone/Asia/Shanghai", "type": "http"},
+    {"host": "api.timezonedb.com/v2.1/get-time-zone", "type": "http"}
+]
+
 async def get_ntp_time():
-    while True:
-        try:
-            response = requests.get("http://worldtimeapi.org/api/timezone/Asia/Hong_Kong")
-            if response.status_code == 200:
-                data = response.json()
-                print(datetime.fromisoformat(data['datetime']).timestamp())
-                return datetime.fromisoformat(data['datetime']).timestamp()
-        except Exception as e:
-            print(f"Error fetching NTP time: {e}")
-        await asyncio.sleep(1)
+    client = ntplib.NTPClient()
+
+    for server in NTP_SERVERS:
+        for attempt in range(2):  # 每个服务器尝试2次
+            try:
+                if server["type"] == "ntp":
+                    # 处理标准NTP协议
+                    response = client.request(
+                        server["host"],
+                        port=123,  # 显式指定NTP端口
+                        version=3,
+                        timeout=3
+                    )
+                    return response.tx_time
+                else:
+                    # 处理HTTP时间API
+                    response = requests.get(
+                        f"http://{server['host']}",
+                        timeout=3,
+                        headers={'User-Agent': 'Mozilla/5.0'}
+                    )
+                    if response.status_code == 200:
+                        data = response.json()
+                        print(f"Using {server['type']} server: {server['host']}")
+                        return datetime.fromisoformat(data['datetime']).timestamp()
+
+            except Exception as e:
+                error_detail = f"{type(e).__name__}: {str(e)}"
+                print(f"Error from {server['host']} (attempt {attempt+1}): {error_detail}")
+                await asyncio.sleep(0.5)
+
+    # 所有服务器失败时使用本地时间
+    print("WARNING: All time servers failed, using local system time")
+    return datetime.now().timestamp()
 
 ntp_time = 0
 boot_time_millis = 0
@@ -80,6 +116,38 @@ boot_time_millis = 0
 #     timestamp = hong_kong_time.strftime('%Y-%m-%d %H:%M:%S')
 #     milliseconds = elapsed_millis % 1000
 #     return f"{timestamp}.{milliseconds:03d}"
+
+
+status_lock = Lock()
+# 添加全局状态存储
+class SensorStatus:
+    def __init__(self):
+        self.connected = 0
+        self.needed = 8
+        self.last_updated = time.time()
+
+sensor_status = SensorStatus()
+
+# update sensor number status
+def update_sensor_status(connected, needed):
+    sensor_status.connected = connected
+    sensor_status.needed = needed
+    sensor_status.last_updated = time.time()
+    # 实时推送
+    socketio.emit('status_update', {
+        'connected': connected,
+        'needed': needed
+    }, namespace='/sensor_status')
+
+# push status update every second
+def background_status_push():
+    while True:
+        socketio.sleep(1)  # 每秒推送一次
+        socketio.emit('status_update', {
+            'connected': sensor_status.connected,
+            'needed': sensor_status.needed
+        }, namespace='/sensor_status')
+
 def create_notify_callback(client, emg_queue, stop_event):
     async def notify_callback(sender, data):
         global boot_time_millis
@@ -92,10 +160,10 @@ def create_notify_callback(client, emg_queue, stop_event):
             #     print(f"Service: {service.uuid}")
             #     for characteristic in service.characteristics:
             #         print(f"  Characteristic: {characteristic.uuid}")
-            
+
             address = client.address
             # for macos
-            # address = sender.obj.peripheral().identifier().UUIDString() 
+            # address = sender.obj.peripheral().identifier().UUIDString()
         except AttributeError:
             print("Error: Could not retrieve the device address from the sender object.")
             return
@@ -115,12 +183,12 @@ def create_notify_callback(client, emg_queue, stop_event):
                         emg_queue.put((timestamp, address, value))
 
                 # Only emit the last data point of the packet
-                socketio.emit('emg_data', {
+                socketio.emit('sensor_data', {
                     'timestamp': timestamp,
                     'mac': address,
                     'value': value
-                })
-                
+                }, namespace='/sensor_data')
+
                 # print('timestamp:', timestamp, 'mac:', address, 'value:', value)
                 # print(json.dumps(on_notify_call_buffer))
 
@@ -143,7 +211,7 @@ def create_notify_callback(client, emg_queue, stop_event):
         #     if all_received:
         #         if debug_logging:
         #             print(f"Received all peripheral data: {serial_pre_values}")
-                    
+
         #         # Reset data_received array for the next batch
         #         with data_received_lock:
         #             for i in range(len(vec_myo_ware_shields)):
@@ -198,16 +266,19 @@ async def on_advertised_device(device, advertisement_data):
 #     return False
 
 async def on_disconnected(client):
+    global vec_myo_ware_clients
+    if client in vec_myo_ware_clients:
+        vec_myo_ware_clients.remove(client)
+        print(f"❌ Disconnected from {client.address} (剩余连接数: {len(vec_myo_ware_clients)-1}/{needed_client_numbers})")
+        update_sensor_status(len(vec_myo_ware_clients), needed_client_numbers)
     while True:
         print(f"Device {client.address} disconnected")
 
 async def connect_to_shields(emg_queue, stop_event):
-    global vec_myo_ware_clients
-    print("Start Connect to MyoWare Wireless Shields...")
+    global vec_myo_ware_clients, needed_client_numbers
+    needed_client_numbers = len(vec_myo_ware_shields)
 
     while len(vec_myo_ware_clients) < needed_client_numbers:
-        print(f"NeededClientNumbers: {needed_client_numbers}")
-        print(f"Current Client Number: {len(vec_myo_ware_clients)}")
         for address in vec_myo_ware_shields:
             if address in [client.address for client in vec_myo_ware_clients]:
                 continue
@@ -222,7 +293,8 @@ async def connect_to_shields(emg_queue, stop_event):
                     shield_connected = client.is_connected
                     if shield_connected:
                         vec_myo_ware_clients.append(client)
-                        print(f"Connected to {address}")
+                        print(f"✅ Connected to {address} (Current numbers: {len(vec_myo_ware_clients)+1}/{needed_client_numbers})")
+                        update_sensor_status(len(vec_myo_ware_clients), needed_client_numbers)
                         break
                 except Exception as e:
                     print(f"Error connecting to {address}: {e}")
@@ -240,7 +312,7 @@ async def connect_to_shields(emg_queue, stop_event):
                     print("Subscribed to notifications")
                 except Exception as e:
                     print(f"Error subscribing to notifications: {e}")
-    
+
     return True
 
 async def monitor_connections(check_interval=30):
@@ -249,7 +321,8 @@ async def monitor_connections(check_interval=30):
     while True:
         await asyncio.sleep(check_interval)
         for client in vec_myo_ware_clients:
-            if not client.is_connected: # if one client disconnect
+            if not client.is_connected:
+                update_sensor_status(len(vec_myo_ware_clients), needed_client_numbers)
                 print('Stopping the program due to a sensor disconnection!', client.address)
                 tasks = [client.disconnect() for client in vec_myo_ware_clients if client.is_connected] # disconnect all client
                 await asyncio.gather(*tasks)
@@ -260,6 +333,8 @@ async def monitor_connections(check_interval=30):
 async def main(socketio_instance, emg_queue, stop_event):
     global ntp_time, boot_time_millis, socketio
     socketio = socketio_instance  # Use the passed SocketIO instance
+
+
 
     # Fetch NTP time
     ntp_time = await get_ntp_time()
@@ -292,6 +367,7 @@ async def main(socketio_instance, emg_queue, stop_event):
         return
 
     connection_success = await connect_to_shields(emg_queue, stop_event)
+    socketio.start_background_task(background_status_push)
     if connection_success:
         await asyncio.create_task(monitor_connections())
 

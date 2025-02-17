@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMG Data Collection</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.0.0/dist/echarts.min.js"></script>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <style>
+        body {
+            padding: 20px;
+            margin: 0;
+            box-sizing: border-box;
+            min-width: 1400px;
+        }
+        #emgChart {
+            width: 100%;
+            height: 400px;
+        }
+        .chart-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr; /* 4列 */
+            grid-template-rows: 1fr ; /* 1行 */
+            gap: 10px; /* 网格间距 */
+            width: 100%; /* 容器宽度 */
+            height: 300px; /* 容器高度 */
+        }
+        .form-group {
+            margin-right: 20px;
+        }
+        .btn-file {
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-file input[type=file] {
+            position: absolute;
+            top: 0;
+            right: 0;
+            min-width: 100%;
+            min-height: 100%;
+            font-size: 100px;
+            text-align: right;
+            filter: alpha(opacity=0);
+            opacity: 0;
+            outline: none;
+            background: white;
+            cursor: inherit;
+            display: block;
+        }
+        .btn-margin-right {
+            margin-right: 10px;
+        }
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mb-4 text-center">EMG and Depth Data Collection Control Panel</h1>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="h5">Control Panel</h2>
+            </div>
+            <div class="card-body">
+                <div class="form-inline mb-4">
+                    <div class="form-group">
+                        <label for="subjectName" class="mr-2">Subject Name</label>
+                        <input type="text" id="subjectName" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="action" class="mr-2">Action</label>
+                        <input type="text" id="action" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="pattern" class="mr-2">Description</label>
+                        <input type="text" id="pattern" class="form-control">
+                    </div>
+                </div>
+                <div class="form-inline mb-4">
+                    <button id="startSensorsButton" class="btn btn-primary btn-margin-right">Start Sensors</button>
+                    <button id="startButton" class="btn btn-success btn-margin-right">Start Collection</button>
+                    <!-- <div>Countdown: <span id="countdown">3</span> Second</div> -->
+                    <!-- <button id="stopButton" class="btn btn-danger btn-margin-right">Stop Collection</button> -->
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="h5">Visualization</h2>
+            </div>
+            <!-- <div class="card-body">
+                <div id="emgChart"></div>
+            </div> -->
+            <div class="chart-grid">
+                <div id="chartBiceps" style="width: 100%; height: 100%;"></div>
+                <div id="chartDeltoids" style="width: 100%; height: 100%;"></div>
+                <div id="chartLatiss" style="width: 100%; height: 100%;"></div>
+                <div id="chartTrapezius" style="width: 100%; height: 100%;"></div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="h5">Websocket Buffer</h2>
+            </div>
+            <div class="card-body">
+                <div id="bufferedAmount" class="alert alert-info"></div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="h5">Latest EMG Data</h2>
+            </div>
+            <div class="card-body">
+                <ul id="emgDataList" class="list-group mb-4"></ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+
+    <script>
+        function saveInput(id) {
+            const element = document.getElementById(id);
+            element.addEventListener('input', function() {
+                localStorage.setItem(id, element.value);
+            });
+        }
+
+        function restoreInput(id) {
+            const savedValue = localStorage.getItem(id);
+            if (savedValue !== null) {
+                document.getElementById(id).value = savedValue;
+            }
+        }
+        // Run these functions for each input field
+        document.addEventListener('DOMContentLoaded', function() {
+            restoreInput('subjectName');
+            restoreInput('action');
+            restoreInput('pattern');
+
+            saveInput('subjectName');
+            saveInput('action');
+            saveInput('pattern');
+        });
+        $(document).ready(function() {
+            // 初始化ECharts实例
+            let charts = {
+            'Biceps': echarts.init(document.getElementById('chartBiceps')),
+            'Deltoids': echarts.init(document.getElementById('chartDeltoids')),
+            'Latiss': echarts.init(document.getElementById('chartLatiss')),
+            'Trapezius': echarts.init(document.getElementById('chartTrapezius'))
+        };
+            // 初始化图表的配置和数据
+            let optionTemplate = {
+                tooltip: {
+                    trigger: 'axis',
+                    formatter: function (params) {
+                        params = params[0];
+                        let date = new Date(params.value[0]);
+                        return date.toLocaleTimeString() + ' : ' + params.value[1];
+                    },
+                    axisPointer: {
+                        animation: false
+                    }
+                },
+                grid: {
+                    left: '20%',
+                    right: '5%',
+                    top: '10%',  // 增加顶部空间
+                    bottom: '10%' // 增加底部空间
+                },
+                xAxis: {
+                    type: 'time',
+                    splitLine: {
+                        show: false
+                    },
+                    axisLabel: {
+                        formatter: function(value) {
+                            let date = new Date(value);
+                            return date.toLocaleTimeString();
+                        }, 
+                        rotate: 30,
+                        margin: 15
+                    }
+                },
+                yAxis: {
+                    type: 'value',
+                    min: 0,
+                    max: 4000,
+                    splitLine: {
+                        show: false
+                    }
+                },
+                series: []
+            };
+            Object.keys(charts).forEach(function(group) {
+                charts[group].setOption(JSON.parse(JSON.stringify(optionTemplate)));
+            });
+
+            
+            $('#startSensorsButton').click(function() {
+                $.ajax({
+                    url: '/start_sensors',
+                    method: 'GET',
+                    success: function(response) {
+                        showToast(response.status, 'success');
+                        $.ajax({
+                            url: '/start_visual_emg',
+                            method: 'GET',
+                            success: function(response) {
+                                console.log(response.status);
+                            },
+                            error: function(xhr, status, error) {
+                                showToast('Failed to visualization: ' + error, 'danger');
+                            }
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        showToast('Failed to start sensors: ' + error, 'danger');
+                    }
+                });
+            });
+
+            $('#startButton').click(function() {
+                let subjectName = $('#subjectName').val();
+                let action = $('#action').val();
+                let pattern = $('#pattern').val();
+
+                if (subjectName && action) {
+                    $.get('/start_collection', { subject: subjectName, action: action, pattern: pattern }, function(data) {
+                        showToast(data.status, 'success');
+                        window.open('/countdown', 'newwindow', 'width=600,height=300,left=400,top=400');
+                    });
+                } else {
+                    showToast("Please enter both subject name and action.", 'warning');
+                }
+                
+                // var countdownElement = $('#countdown');
+                // var countdownTime = 3; 
+                // countdownElement.text(countdownTime); 
+                // var interval = setInterval(function() {
+                //     countdownTime--; // 每次减少1秒
+                //     countdownElement.text(countdownTime); 
+                //     if (countdownTime <= 0) {
+                //         clearInterval(interval); 
+
+                //         $.get('/stop_collection', function(data) {
+                //             showToast(data.status, 'success');
+                //         });
+                //     }
+                // }, 1000); 
+            });
+
+            // $('#stopButton').click(function() {
+            //     $.get('/stop_collection', function(data) {
+            //         showToast(data.status, 'success');
+            //         location.reload(); // Refresh the page after stopping collection
+            //     });
+            // });
+            
+            // 连接到服务器的WebSocket
+            var socket = io.connect('http://' + document.domain + ':' + location.port);
+            
+            socket.on('connect', function() {
+                console.log('WebSocket connected');
+            });
+
+            socket.on('disconnect', function() {
+                console.log('WebSocket disconnected');
+            });
+
+            const macToMuscle = {
+            'E4:65:B8:14:BA:9A': { id: '01', name: 'L_Biceps', group: 'Biceps' },
+            'D4:8A:FC:C5:8B:B2': { id: '02', name: 'R_Biceps', group: 'Biceps' },
+            'E4:65:B8:14:79:5E': { id: '03', name: 'L_Deltoid', group: 'Deltoids' },
+            'D4:8A:FC:C5:A5:CA': { id: '04', name: 'R_Deltoid', group: 'Deltoids' },
+            'D4:8A:FC:C4:B0:C6': { id: '05', name: 'L_Latiss', group: 'Latiss' },
+            'D4:8A:FC:C5:AB:32': { id: '06', name: 'R_Latiss', group: 'Latiss' },
+            'D4:8A:FC:C5:9E:12': { id: '07', name: 'L_Trapezius', group: 'Trapezius' },
+            'D4:8A:FC:C5:06:7E': { id: '08', name: 'R_Trapezius', group: 'Trapezius' }
+            };
+
+            var emgValues = {};
+            const MAX_TIME_DIFF = 10000; // 10秒
+            const MAX_QUEUE_SIZE = 100;
+            let lastUpdateTime = 0;
+            const UPDATE_INTERVAL = 1000; // 1秒更新一次
+
+        socket.on('emg_data', function(data) {
+                console.log(data);
+                var timestamp = new Date(data.timestamp);
+
+                if (!emgValues[data.mac]) {
+                    emgValues[data.mac] = [];
+                }
+
+                emgValues[data.mac].push([timestamp, data.value]);
+
+                // 控制队列大小
+                if (emgValues[data.mac].length > MAX_QUEUE_SIZE) {
+                    emgValues[data.mac].shift();
+                }
+
+                // 使用 requestAnimationFrame 来控制更新频率
+                if (Date.now() - lastUpdateTime > UPDATE_INTERVAL) {
+                    requestAnimationFrame(updateCharts);
+                    lastUpdateTime = Date.now();
+                }
+
+                function updateCharts() {
+                    let groupedSeries = {};
+
+                    Object.keys(emgValues).forEach(mac => {
+                        let group = macToMuscle[mac].group;
+                        if (!groupedSeries[group]) {
+                            groupedSeries[group] = {
+                                legendData: [],
+                                series: []
+                            };
+                        }
+                        let muscleInfo = macToMuscle[mac];
+                        let color = muscleInfo.name.startsWith('L_') ? '#00FF00' : '#0000FF';
+                        groupedSeries[group].legendData.push(`${muscleInfo.name} (ID: ${muscleInfo.id})`);
+
+                        groupedSeries[group].series.push({
+                            name: `${muscleInfo.name} (ID: ${muscleInfo.id})`,
+                            type: 'line',
+                            data: emgValues[mac],
+                            sampling: 'lttb',
+                            symbol: 'none',
+                            itemStyle: {color: color}
+                        });
+                    });
+
+                    Object.keys(groupedSeries).forEach(group => {
+                        let chart = charts[group];
+                        let allData = groupedSeries[group].series.flatMap(s => s.data);
+                        let minTime = Math.min(...allData.map(d => d[0]));
+                        let maxTime = Math.max(...allData.map(d => d[0]));
+
+                        chart.setOption({
+                            legend: {
+                                data: groupedSeries[group].legendData
+                            },
+                            series: groupedSeries[group].series,
+                            xAxis: {
+                                min: minTime,
+                                max: maxTime
+                            }
+                        });
+                    });
+                }
+
+            // function updateBufferedAmount() {
+            //     var transport = socket.io.engine.transport;
+            //     if (transport && transport.name === 'websocket') {
+            //         var ws = transport.ws;
+            //         if (ws) {
+            //             var bufferedAmount = ws.bufferedAmount;
+            //             document.getElementById('bufferedAmount').textContent = `Buffered Amount: ${bufferedAmount} bytes`;
+            //             // console.log(`Buffered Amount: ${bufferedAmount} bytes`);
+            //         } else {
+            //             document.getElementById('bufferedAmount').textContent = 'Buffered Amount: WebSocket instance not found';
+            //             console.log('WebSocket instance not found');
+            //         }
+            //     } else {
+            //         document.getElementById('bufferedAmount').textContent = 'Buffered Amount: WebSocket transport not available';
+            //         console.log('WebSocket transport not available');
+            //     }
+            // }
+
+            function showToast(message, type) {
+                var toastId = 'toast-' + Date.now();
+                var toastHtml = `
+                    <div id="${toastId}" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000">
+                        <div class="toast-header">
+                            <strong class="mr-auto">${type.charAt(0).toUpperCase() + type.slice(1)}</strong>
+                            <small class="text-muted">Just now</small>
+                            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="toast-body">
+                            ${message}
+                        </div>
+                    </div>
+                `;
+                $('#toast-container').append(toastHtml);
+                $('#' + toastId).toast('show').on('hidden.bs.toast', function () {
+                    $(this).remove();
+                });
+            }
+
+            // 定时检查 WebSocket 缓冲区状态
+            // setInterval(updateBufferedAmount, 1000);
+        });
+    </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMG Data Collection</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.0.0/dist/echarts.min.js"></script>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <style>
+        body {
+            padding: 20px;
+        }
+        #emgChart {
+            width: 100%;
+            height: 400px;
+        }
+        .form-group {
+            margin-right: 20px;
+        }
+        .btn-file {
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-file input[type=file] {
+            position: absolute;
+            top: 0;
+            right: 0;
+            min-width: 100%;
+            min-height: 100%;
+            font-size: 100px;
+            text-align: right;
+            filter: alpha(opacity=0);
+            opacity: 0;
+            outline: none;
+            background: white;
+            cursor: inherit;
+            display: block;
+        }
+        .btn-margin-right {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mb-4 text-center"> EMG and Depth Data Collection Control Panel</h1>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="h5">Control Panel</h2>
+            </div>
+            <div class="card-body">
+                <div class="form-inline mb-4">
+                    <div class="form-group">
+                        <label for="subjectName" class="mr-2">Subject Name</label>
+                        <input type="text" id="subjectName" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="action" class="mr-2">Action</label>
+                        <input type="text" id="action" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="pattern" class="mr-2">Description</label>
+                        <input type="text" id="pattern" class="form-control">
+                    </div>
+                </div>
+                <div class="form-inline mb-4">
+                    <button id="startSensorsButton" class="btn btn-primary btn-margin-right">Start Sensors</button>
+                    <button id="startButton" class="btn btn-success btn-margin-right">Start Collection</button>
+                    <button id="stopButton" class="btn btn-danger btn-margin-right">Stop Collection</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="h5">Visualization</h2>
+            </div>
+            <div class="card-body">
+                <div id="emgChart"></div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="h5">Websocket Buffer</h2>
+            </div>
+            <div class="card-body">
+                <div id="bufferedAmount" class="alert alert-info"></div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="h5">Latest EMG Data</h2>
+            </div>
+            <div class="card-body">
+                <ul id="emgDataList" class="list-group mb-4"></ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // 初始化ECharts实例
+            let emgChart = echarts.init(document.getElementById('emgChart'));
+
+            // 初始化图表的配置和数据
+            let option = {
+                title: {
+                    text: 'Real-time EMG Data'
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    formatter: function (params) {
+                        params = params[0];
+                        let date = new Date(params.value[0]);
+                        return date.toLocaleTimeString() + ' : ' + params.value[1];
+                    },
+                    axisPointer: {
+                        animation: false
+                    }
+                },
+                xAxis: {
+                    type: 'time',
+                    splitLine: {
+                        show: false
+                    },
+                    axisLabel: {
+                        formatter: function(value) {
+                            let date = new Date(value);
+                            return date.toLocaleTimeString();
+                        }
+                    }
+                },
+                yAxis: {
+                    type: 'value',
+                    min: 0,
+                    max: 4000,
+                    splitLine: {
+                        show: false
+                    }
+                },
+                series: []
+            };
+            emgChart.setOption(option);
+            
+            $('#startSensorsButton').click(function() {
+                $.ajax({
+                    url: '/start_sensors',
+                    method: 'GET',
+                    success: function(response) {
+                        alert(response.status);
+                        $.ajax({
+                            url: '/start_visual_emg',
+                            method: 'GET',
+                            success: function(response) {
+                                console.log(response.status);
+                            },
+                            error: function(xhr, status, error) {
+                                alert('Failed to visualization ' + error);
+                            }
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        alert('Failed to start sensors: ' + error);
+                    }
+                });
+            });
+
+            $('#startButton').click(function() {
+                let subjectName = $('#subjectName').val();
+                let action = $('#action').val();
+                let pattern = $('#pattern').val();
+
+                if (subjectName && action) {
+                    $.get('/start_collection', { subject: subjectName, action: action, pattern: pattern }, function(data) {
+                        alert(data.status);
+                    });
+                } else {
+                    alert("Please enter both subject name and action.");
+                }
+            });
+
+            $('#stopButton').click(function() {
+                $.get('/stop_collection', function(data) {
+                    alert(data.status);
+                    location.reload(); // Refresh the page after stopping collection
+                });
+
+                // $.ajax({
+                //     url: '/start_visual_emg',
+                //     method: 'GET',
+                //     success: function(response) {
+                //         console.log(response.status);
+                //     },
+                //     error: function(xhr, status, error) {
+                //         alert('Failed to visualization ' + error);
+                //     }
+                // });
+            });
+            
+
+
+            // 连接到服务器的WebSocket
+            var socket = io.connect('http://' + document.domain + ':' + location.port);
+            
+            socket.on('connect', function() {
+                console.log('WebSocket connected');
+            });
+
+            socket.on('disconnect', function() {
+                console.log('WebSocket disconnected');
+            });
+
+            var emgValues = {};
+            const MAX_TIME_DIFF = 10000; // 10秒
+
+            socket.on('emg_data', function(data) {
+                var timestamp = new Date(data.timestamp);
+                var macAddress = data.mac;
+                var emgValue = parseFloat(data.value);
+                var source = data.source || macAddress;
+                var now = new Date();
+
+                if (!emgValues[source]) {
+                    emgValues[source] = [];
+                }
+                queue = emgValues[source]
+                queue.push([timestamp, emgValue]);
+
+                while (queue.length > 0 && timestamp - queue[0][0] > MAX_TIME_DIFF) {
+                    queue.shift();
+                }
+
+                let series = Object.keys(emgValues).map((src, index) => {
+                    return {
+                        name: `Biceps (${src})`,
+                        type: 'line',
+                        data: emgValues[src],
+                        sampling: 'lttb',
+                        symbol: 'none'
+                    };
+                });
+
+                let legendData = Object.keys(emgValues).map(src => `Biceps (${src})`);
+
+                emgChart.setOption({
+                    legend: {
+                        data: legendData
+                    },
+                    series: series,
+                    xAxis: {
+                        min: new Date(timestamp.getTime() - MAX_TIME_DIFF), // 显示过去10秒的数据
+                        max: timestamp, 
+                    }
+                });
+
+                // // 更新最新的EMG数据列表
+                // $('#emgDataList').prepend(
+                //     `<li class="list-group-item">
+                //         <span class="badge badge-info">${source}</span>
+                //         ${emgValue} at ${timestamp.toLocaleTimeString()}
+                //     </li>`
+                // );
+                // // 保持#emgDataList只包含最新的10条数据
+                // if ($('#emgDataList li').length > 10) {
+                //     $('#emgDataList li:last').remove();
+                // }
+
+                updateBufferedAmount();
+            });
+
+            function updateBufferedAmount() {
+                var transport = socket.io.engine.transport;
+                if (transport && transport.name === 'websocket') {
+                    var ws = transport.ws;
+                    if (ws) {
+                        var bufferedAmount = ws.bufferedAmount;
+                        document.getElementById('bufferedAmount').textContent = `Buffered Amount: ${bufferedAmount} bytes`;
+                        // console.log(`Buffered Amount: ${bufferedAmount} bytes`);
+                    } else {
+                        document.getElementById('bufferedAmount').textContent = 'Buffered Amount: WebSocket instance not found';
+                        console.log('WebSocket instance not found');
+                    }
+                } else {
+                    document.getElementById('bufferedAmount').textContent = 'Buffered Amount: WebSocket transport not available';
+                    console.log('WebSocket transport not available');
+                }
+            }
+
+            // 定时检查 WebSocket 缓冲区状态
+            setInterval(updateBufferedAmount, 1000);
+        });
+    </script>
+</body>
+</html> -->

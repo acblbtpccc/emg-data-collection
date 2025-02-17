@@ -55,7 +55,7 @@ def save_depthandrgb_web(cfg, camera, stop_event, sample_folder_path, sample_fol
     with open(frame_info_path, "a") as frame_info:
         f_csv = csv.writer(frame_info)
         f_csv.writerow(headers)
-        
+
     try:
         while not stop_event.is_set():
             # while True:
@@ -91,25 +91,35 @@ def save_depthandrgb_web(cfg, camera, stop_event, sample_folder_path, sample_fol
                     frametmp.dtype = numpy.uint8
                     rotated_frame = numpy.rot90(frametmp, k=-1)
                     vout_rgb.write(rotated_frame)
-                    
+
     finally:
         print("video {:s} has been writen!".format(depth_video_path))
         vout_d.release()
         vout_rgb.release()
 
- 
+
 def save_emg_web(cfg, stop_event, sample_folder_path, sample_folder_name, emg_queue):
-    # MAC address to muscle mapping
     mac_to_info = {
-    'E4:65:B8:14:BA:9A': ('01', 'L_Biceps'),
-    'D4:8A:FC:C5:8B:B2': ('02', 'R_Biceps'),
-    'E4:65:B8:14:79:5E': ('03', 'L_Deltoid'),
-    'D4:8A:FC:C5:A5:CA': ('04', 'R_Deltoid'),
-    'D4:8A:FC:C4:B0:C6': ('05', 'L_Latiss'),
-    'D4:8A:FC:C5:AB:32': ('06', 'R_Latiss'),
-    'D4:8A:FC:C5:9E:12': ('07', 'L_Trapezius'),
-    'D4:8A:FC:C5:06:7E': ('08', 'R_Trapezius')
-}
+        # 标准MAC地址 (Windows/Linux)
+        'E4:65:B8:14:BA:9A': ('01', 'L_Biceps'),
+        'D4:8A:FC:C5:8B:B2': ('02', 'R_Biceps'),
+        'E4:65:B8:14:79:5E': ('03', 'L_Deltoid'),
+        'D4:8A:FC:C5:A5:CA': ('04', 'R_Deltoid'),
+        'D4:8A:FC:C4:B0:C6': ('05', 'L_Latiss'),
+        'D4:8A:FC:C5:AB:32': ('06', 'R_Latiss'),
+        'D4:8A:FC:C5:9E:12': ('07', 'L_Trapezius'),
+        'D4:8A:FC:C5:06:7E': ('08', 'R_Trapezius'),
+
+        # macOS UUID格式地址
+        'EEF3BA12-3B30-2C9B-2969-BC28E44D5524': ('01', 'L_Biceps'),
+        '47379FCE-9307-45EB-A7A2-06FBE7FCF125': ('02', 'R_Biceps'),
+        '89F980BE-4453-7A98-81F1-D4BCC5C55F26': ('03', 'L_Deltoid'),
+        '133D0F9C-2147-626D-53D0-CCFAB0AD544E': ('04', 'R_Deltoid'),
+        'A3A4C3F9-8554-F3CA-D3E0-CCFAB0AD544E': ('05', 'L_Latiss'),
+        '8FDD7C6A-C5E4-3D7C-7B51-C3A2F2C184D4': ('06', 'R_Latiss'),
+        '0D1B85BC-6814-3153-6A91-F0DC0D987177': ('07', 'L_Trapezius'),
+        '2A659F4D-D6AE-CC59-BFC8-EDD0C0C1220C': ('08', 'R_Trapezius')
+    }
     logger.debug(f"stop_event: {stop_event}")
 
     emg_path = os.path.join(sample_folder_path, sample_folder_name + '-emg.csv')
@@ -125,14 +135,13 @@ def save_emg_web(cfg, stop_event, sample_folder_path, sample_folder_name, emg_qu
 
         while not stop_event.is_set():
             logger.debug(f"stop_event: {stop_event}")
-            
+
             try:
                 timestamp, mac, value = emg_queue.get(timeout=1)
                 emgid, muscle = mac_to_info.get(mac, ("Unknown", "Unknown"))
                 buffer.append([timestamp, emgid, mac, muscle, value])
                 logger.debug(f"{timestamp}: {emgid}: {mac}: {muscle}: {value}")
-                
-                # 当缓冲区达到批量大小时写入文件
+
                 if len(buffer) >= batch_size:
                     with open(emg_path, 'a', newline='') as emg_data:
                         writer = csv.writer(emg_data)
@@ -192,14 +201,14 @@ def collect_depthandrgb(cfg, camera):
                     f_csv = csv.writer(frame_info)
                     f_csv.writerow(headers)
                 start_time = time.time()
-            
+
             # if video writer is initialized, just write video file
             else:
                 ret, frameready = camera.Ps2_ReadNextFrame()
                 if  ret != 0:
                     print("Ps2_ReadNextFrame failed:",ret)
                     time.sleep(1)
-                    continue 
+                    continue
 
                 if frameready.mappedDepth:
                     ret, depthframe = camera.Ps2_GetFrame(PsFrameType.PsMappedDepthFrame)     # (480, 640)
@@ -240,17 +249,17 @@ def collect_depthandrgb(cfg, camera):
     except Exception as e:
         print('Exception: ', e)
 
-    ret = camera.Ps2_StopStream()       
+    ret = camera.Ps2_StopStream()
     if  ret == 0:
         print("stop stream successful")
     else:
-        print('Ps2_StopStream failed: ' + str(ret))  
+        print('Ps2_StopStream failed: ' + str(ret))
 
-    ret = camera.Ps2_CloseDevice()     
+    ret = camera.Ps2_CloseDevice()
     if  ret == 0:
         print("close device successful")
     else:
-        print('Ps2_CloseDevice failed: ' + str(ret)) 
+        print('Ps2_CloseDevice failed: ' + str(ret))
 
 def collect_emg(cfg, shared_emg_data, lock):
     ser = serial.Serial(cfg.SERIALPORT, cfg.BAUDRATE)  # Windows Serial port
@@ -269,7 +278,7 @@ def collect_emg(cfg, shared_emg_data, lock):
     ser = open_serial_port()
     if ser is None:
         return
-    
+
     try:
         while True:
             if not emg_path:
@@ -279,7 +288,7 @@ def collect_emg(cfg, shared_emg_data, lock):
                     writer = csv.writer(emg_data)
                     writer.writerow(header)
                 start_time = time.time()
-                
+
             else:
                 try:
                     if ser.in_waiting > 0:

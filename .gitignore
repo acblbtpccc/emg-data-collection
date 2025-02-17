@@ -17,3 +17,9 @@ figures/
 
 
 tmp_data/
+
+node_modules/
+
+.vscode/
+
+emg-data-collection-no-data-no-git.tar.gz

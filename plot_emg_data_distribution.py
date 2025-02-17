@@ -159,11 +159,12 @@ def plot_emgs_all_subject(base_path):
 
     plot_pvalue_barchart(p_values_df, f'figures/iEMG-AVOVA-pvalue-muslce-allactions')
 
-def plot_emgs(base_path):
+def get_datacontainer(base_path, subject):
+    data_path = os.path.join(base_path, subject)
     data_container = {action: {pattern: {muscle: [] for muscle in muscles} for pattern in patterns} for action in action_order}
 
-    for action in os.listdir(base_path):
-        action_path = os.path.join(base_path, action)
+    for action in os.listdir(data_path):
+        action_path = os.path.join(data_path, action)
         for sample in os.listdir(action_path):
             sample_path = os.path.join(action_path, sample)
             pattern = extract_patterns(sample)
@@ -176,7 +177,10 @@ def plot_emgs(base_path):
                 rms = calculate_rms(muscle_data['emg_value'])
                 for p in individual_patterns:
                     data_container[action][p][muscle].append(rms)
+    return data_container
     
+
+def anova_analysis(data_container):
     def flatten_data(data_container):
         rows = []
         for action, patterns in data_container.items():
@@ -206,15 +210,20 @@ def plot_emgs(base_path):
     plot_pvalue_barchart(p_values_df, f'figures/S5-AVOVA-pvalue-muslce-allactions')
     plot_pvalues_all_actions(df, action_order, muscles, f'figures/iEMG-AVOVA-P-values-PerAction')
 
-    threshold_rate = 1.
-    if not os.path.exists(f'intensity_dict_{threshold_rate}.npz'):
-        intensity_dict = {muscle: {action: {pattern: 'middle' for pattern in patterns} for action in data_container} for muscle in muscles}
+
+def muscle_intensity(subject, data_container):
+    threshold_rate = 0.75
+    if not os.path.exists(f'muscle_intensity_map/S{subject}_intensity_dict_{threshold_rate}.npz'):
+        # intensity_dict = {muscle: {action: {pattern: 'middle' for pattern in patterns} for action in data_container} for muscle in muscles}
+        intensity_dict = {action: {muscle: {pattern: 'middle' for pattern in patterns} for muscle in muscles} for action in action_order}
+        
         import matplotlib.cm as cm
         colors = cm.rainbow(np.linspace(0, 1, 3))
         for action in data_container:
             pattern_rms = data_container[action]
-            plt.figure(figsize=(10, 6))
-            for muscle in muscles:
+            plt.figure(figsize=(20, 4))
+            for index, muscle in enumerate(muscles, start=1):
+                ax = plt.subplot(1, len(muscles), index)
                 normal = pattern_rms['P0'][muscle]
                 std = np.std(normal)
                 mean = np.mean(normal)
@@ -232,22 +241,33 @@ def plot_emgs(base_path):
                         label = 'low'
                         c = colors[2]
                     intensity_dict[muscle][action][pattern] = label
-                    plt.scatter(x, y, label=pattern+'-'+label, color=c)
-                plt.xlabel('Pattern')
-                plt.ylabel('RMS EMG Value')
-                plt.title(f'Action {action} EMG Data')
-                plt.legend()
-                plt.grid(True)
-                plt.savefig(f'figs/{action}-{muscle}-rms_emg_muscle.png')
-                plt.close()
-        np.savez(f'intensity_dict_{threshold_rate}', intensity_dict=intensity_dict)
+                    ax.scatter(x, y, label=f'{pattern}-{label}', color=c)
+                ax.set_title(f'{muscle} in Action {action}')
+                ax.set_xlabel('Pattern')
+                ax.set_ylabel('RMS EMG Value')
+                ax.grid(True)
+                ax.set_ylim([0, max(normal) * 1.2]) 
+                if index == len(muscles):
+                    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+            plt.subplots_adjust(wspace=0.5) 
+            plt.savefig(f'figs/S{subject}-A{action}-rms_emg_muscle.png')
+            plt.close()
+        np.savez(f'muscle_intensity_map/S{subject}_intensity_dict_{threshold_rate}', intensity_dict=intensity_dict)
     else:
-        intensity_dict = np.load(f'intensity_dict_{threshold_rate}.npz', allow_pickle=True)[()]
-    for muscle in intensity_dict:
-        for action in intensity_dict[muscle]:
-            for pattern in intensity_dict[muscle][action]:
-                print(f'{muscle}-{action}-{pattern}: {intensity_dict[muscle][action][pattern]}')
+        intensity_dict = np.load(f'muscle_intensity_map/S{subject}_intensity_dict_{threshold_rate}.npz', allow_pickle=True)
+
+def get_muscle_intensity_label(base_path_data, base_path_muscle_map):
+    for subject in os.listdir(base_path_data):
+        subject_path = os.path.join(base_path_data, subject)
+        for action in os.listdir(subject_path):
+            action_path = os.path.join(subject_path, action)
+            for sample in os.listdir(action_path):
+                sample_path = os.path.join(action_path, sample)
+                muslce_label = np.load(os.path.join(base_path_muscle_map, f'{subject}_intensity_dict_0.75.npz'), allow_pickle=True)[action]
+                
 
 if __name__ == "__main__":
     # plot_emgs_all_subject('/root/emg-data-collection/data')
-    plot_emgs('/root/emg-data-collection/data/5')
+    base_path = '/root/emg-data-collection/data'
+    subject = '2'
+    datacontrainer = get_datacontainer(base_path, subject)

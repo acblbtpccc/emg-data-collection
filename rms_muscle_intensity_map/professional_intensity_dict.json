@@ -1,0 +1,1206 @@
+{
+    "1": {
+        "P0": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P1": {
+            "L_Biceps": "low",
+            "R_Biceps": "low",
+            "L_Deltoid": "high",
+            "R_Deltoid": "high",
+            "L_Latiss": "high",
+            "R_Latiss": "high",
+            "L_Trapezius": "high",
+            "R_Trapezius": "high"
+        },
+        "P2": {
+            "L_Biceps": "low",
+            "R_Biceps": "low",
+            "L_Deltoid": "low",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "high",
+            "L_Trapezius": "high",
+            "R_Trapezius": "high"
+        },
+        "P3": {
+            "L_Biceps": "low",
+            "R_Biceps": "low",
+            "L_Deltoid": "high",
+            "R_Deltoid": "high",
+            "L_Latiss": "high",
+            "R_Latiss": "high",
+            "L_Trapezius": "high",
+            "R_Trapezius": "high"
+        },
+        "P4": {
+            "L_Biceps": "low",
+            "R_Biceps": "low",
+            "L_Deltoid": "low",
+            "R_Deltoid": "low",
+            "L_Latiss": "low",
+            "R_Latiss": "low",
+            "L_Trapezius": "low",
+            "R_Trapezius": "low"
+        },
+        "P5": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P6": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P7": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P8": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P9": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P10": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P11": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P1,2": {
+            "L_Biceps": "low",
+            "R_Biceps": "low",
+            "L_Deltoid": "high",
+            "R_Deltoid": "high",
+            "L_Latiss": "high",
+            "R_Latiss": "high",
+            "L_Trapezius": "high",
+            "R_Trapezius": "high"
+        },
+        "P1,3": {
+            "L_Biceps": "low",
+            "R_Biceps": "low",
+            "L_Deltoid": "high",
+            "R_Deltoid": "high",
+            "L_Latiss": "middle",
+            "R_Latiss": "high",
+            "L_Trapezius": "high",
+            "R_Trapezius": "high"
+        },
+        "P4,6": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P2,8": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P3,11": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        }
+    },
+    "2": {
+        "P0": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P1": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P2": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P3": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P4": {
+            "L_Biceps": "low",
+            "R_Biceps": "low",
+            "L_Deltoid": "low",
+            "R_Deltoid": "low",
+            "L_Latiss": "low",
+            "R_Latiss": "low",
+            "L_Trapezius": "low",
+            "R_Trapezius": "low"
+        },
+        "P5": {
+            "L_Biceps": "low",
+            "R_Biceps": "high",
+            "L_Deltoid": "high",
+            "R_Deltoid": "high",
+            "L_Latiss": "low",
+            "R_Latiss": "high",
+            "L_Trapezius": "low",
+            "R_Trapezius": "high"
+        },
+        "P6": {
+            "L_Biceps": "low",
+            "R_Biceps": "low",
+            "L_Deltoid": "low",
+            "R_Deltoid": "low",
+            "L_Latiss": "high",
+            "R_Latiss": "low",
+            "L_Trapezius": "low",
+            "R_Trapezius": "low"
+        },
+        "P7": {
+            "L_Biceps": "low",
+            "R_Biceps": "middle",
+            "L_Deltoid": "high",
+            "R_Deltoid": "high",
+            "L_Latiss": "low",
+            "R_Latiss": "low",
+            "L_Trapezius": "low",
+            "R_Trapezius": "high"
+        },
+        "P8": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P9": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P10": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P11": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P1,2": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P1,3": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P4,6": {
+            "L_Biceps": "low",
+            "R_Biceps": "low",
+            "L_Deltoid": "low",
+            "R_Deltoid": "low",
+            "L_Latiss": "low",
+            "R_Latiss": "low",
+            "L_Trapezius": "low",
+            "R_Trapezius": "low"
+        },
+        "P2,8": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P3,11": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        }
+    },
+    "3": {
+        "P0": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P1": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P2": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P3": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P4": {
+            "L_Biceps": "low",
+            "R_Biceps": "low",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "low",
+            "L_Latiss": "low",
+            "R_Latiss": "low",
+            "L_Trapezius": "low",
+            "R_Trapezius": "low"
+        },
+        "P5": {
+            "L_Biceps": "high",
+            "R_Biceps": "low",
+            "L_Deltoid": "high",
+            "R_Deltoid": "high",
+            "L_Latiss": "high",
+            "R_Latiss": "low",
+            "L_Trapezius": "high",
+            "R_Trapezius": "low"
+        },
+        "P6": {
+            "L_Biceps": "high",
+            "R_Biceps": "high",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "low",
+            "L_Latiss": "low",
+            "R_Latiss": "high",
+            "L_Trapezius": "low",
+            "R_Trapezius": "low"
+        },
+        "P7": {
+            "L_Biceps": "middle",
+            "R_Biceps": "low",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "low",
+            "L_Latiss": "low",
+            "R_Latiss": "low",
+            "L_Trapezius": "high",
+            "R_Trapezius": "low"
+        },
+        "P8": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P9": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P10": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P11": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P1,2": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P1,3": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P4,6": {
+            "L_Biceps": "low",
+            "R_Biceps": "low",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "low",
+            "L_Latiss": "low",
+            "R_Latiss": "low",
+            "L_Trapezius": "low",
+            "R_Trapezius": "low"
+        },
+        "P2,8": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P3,11": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        }
+    },
+    "4": {
+        "P0": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P1": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P2": {
+            "L_Biceps": "middle",
+            "R_Biceps": "low",
+            "L_Deltoid": "low",
+            "R_Deltoid": "low",
+            "L_Latiss": "middle",
+            "R_Latiss": "high",
+            "L_Trapezius": "low",
+            "R_Trapezius": "low"
+        },
+        "P3": {
+            "L_Biceps": "middle",
+            "R_Biceps": "low",
+            "L_Deltoid": "low",
+            "R_Deltoid": "low",
+            "L_Latiss": "low",
+            "R_Latiss": "low",
+            "L_Trapezius": "low",
+            "R_Trapezius": "low"
+        },
+        "P4": {
+            "L_Biceps": "low",
+            "R_Biceps": "low",
+            "L_Deltoid": "low",
+            "R_Deltoid": "low",
+            "L_Latiss": "low",
+            "R_Latiss": "low",
+            "L_Trapezius": "low",
+            "R_Trapezius": "low"
+        },
+        "P5": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P6": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P7": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P8": {
+            "L_Biceps": "low",
+            "R_Biceps": "low",
+            "L_Deltoid": "low",
+            "R_Deltoid": "low",
+            "L_Latiss": "low",
+            "R_Latiss": "low",
+            "L_Trapezius": "low",
+            "R_Trapezius": "low"
+        },
+        "P9": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P10": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P11": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P1,2": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P1,3": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P4,6": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P2,8": {
+            "L_Biceps": "low",
+            "R_Biceps": "low",
+            "L_Deltoid": "low",
+            "R_Deltoid": "low",
+            "L_Latiss": "low",
+            "R_Latiss": "low",
+            "L_Trapezius": "low",
+            "R_Trapezius": "low"
+        },
+        "P3,11": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        }
+    },
+    "5": {
+        "P0": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P1": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P2": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P3": {
+            "L_Biceps": "low",
+            "R_Biceps": "low",
+            "L_Deltoid": "low",
+            "R_Deltoid": "low",
+            "L_Latiss": "low",
+            "R_Latiss": "low",
+            "L_Trapezius": "low",
+            "R_Trapezius": "low"
+        },
+        "P4": {
+            "L_Biceps": "low",
+            "R_Biceps": "low",
+            "L_Deltoid": "low",
+            "R_Deltoid": "low",
+            "L_Latiss": "low",
+            "R_Latiss": "low",
+            "L_Trapezius": "low",
+            "R_Trapezius": "low"
+        },
+        "P5": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P6": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P7": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P8": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P9": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P10": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P11": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P1,2": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P1,3": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P4,6": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P2,8": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P3,11": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        }
+    },
+    "6": {
+        "P0": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P1": {
+            "L_Biceps": "high",
+            "R_Biceps": "high",
+            "L_Deltoid": "high",
+            "R_Deltoid": "high",
+            "L_Latiss": "low",
+            "R_Latiss": "low",
+            "L_Trapezius": "high",
+            "R_Trapezius": "high"
+        },
+        "P2": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P3": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P4": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P5": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P6": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P7": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P8": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P9": {
+            "L_Biceps": "high",
+            "R_Biceps": "high",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "low",
+            "L_Latiss": "low",
+            "R_Latiss": "low",
+            "L_Trapezius": "high",
+            "R_Trapezius": "high"
+        },
+        "P10": {
+            "L_Biceps": "high",
+            "R_Biceps": "high",
+            "L_Deltoid": "high",
+            "R_Deltoid": "high",
+            "L_Latiss": "low",
+            "R_Latiss": "low",
+            "L_Trapezius": "low",
+            "R_Trapezius": "high"
+        },
+        "P11": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P1,2": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P1,3": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P4,6": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P2,8": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P3,11": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        }
+    },
+    "7": {
+        "P0": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P1": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P2": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P3": {
+            "L_Biceps": "low",
+            "R_Biceps": "low",
+            "L_Deltoid": "low",
+            "R_Deltoid": "low",
+            "L_Latiss": "low",
+            "R_Latiss": "low",
+            "L_Trapezius": "low",
+            "R_Trapezius": "low"
+        },
+        "P4": {
+            "L_Biceps": "low",
+            "R_Biceps": "low",
+            "L_Deltoid": "low",
+            "R_Deltoid": "low",
+            "L_Latiss": "low",
+            "R_Latiss": "low",
+            "L_Trapezius": "low",
+            "R_Trapezius": "low"
+        },
+        "P5": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P6": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P7": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P8": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P9": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P10": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P11": {
+            "L_Biceps": "low",
+            "R_Biceps": "low",
+            "L_Deltoid": "low",
+            "R_Deltoid": "low",
+            "L_Latiss": "high",
+            "R_Latiss": "high",
+            "L_Trapezius": "low",
+            "R_Trapezius": "low"
+        },
+        "P1,2": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P1,3": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P4,6": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P2,8": {
+            "L_Biceps": "middle",
+            "R_Biceps": "middle",
+            "L_Deltoid": "middle",
+            "R_Deltoid": "middle",
+            "L_Latiss": "middle",
+            "R_Latiss": "middle",
+            "L_Trapezius": "middle",
+            "R_Trapezius": "middle"
+        },
+        "P3,11": {
+            "L_Biceps": "low",
+            "R_Biceps": "low",
+            "L_Deltoid": "low",
+            "R_Deltoid": "low",
+            "L_Latiss": "low",
+            "R_Latiss": "low",
+            "L_Trapezius": "low",
+            "R_Trapezius": "low"
+        }
+    }
+}
