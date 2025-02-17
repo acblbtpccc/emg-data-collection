@@ -112,6 +112,7 @@
   let countdownInput = 3;
   let isCountingDown = false;
   let countdownTime = 0;
+  let countdownReadNumber = 0;
 
   // 修改原收集启动函数
   async function handleStartCollection() {
@@ -134,21 +135,27 @@
       countdownTime = countdownInput;
 
       speak('Start in');
-      await new Promise(r => setTimeout(r, 500));
+      // await new Promise(r => setTimeout(r, 500));
 
-      countdownTime = countdownInput - 1;
-      speak(countdownTime.toString());
+      // countdownTime = countdownInput;
+      countdownReadNumber = countdownTime - 1;
+      speak(countdownReadNumber.toString());
 
       const timer = setInterval(() => {
         countdownTime -= 1;
+        countdownReadNumber = countdownTime - 1;
         if (countdownTime > 0 ) {
-          speak(countdownTime.toString());
+          if (countdownReadNumber > 0) {
+            speak(countdownReadNumber.toString());
+          } else {
+            speak('Finish!');
+          }
         } else {
           clearInterval(timer);
           isCountingDown = false;
-          speak('Finish!');
           handleStopCollection();
         }
+
       }, 1000);
 
       toast.success("Started");

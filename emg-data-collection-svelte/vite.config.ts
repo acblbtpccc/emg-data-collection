@@ -24,20 +24,18 @@ export default defineConfig({
         target: 'http://localhost:5002',
         ws: true,
         changeOrigin: true,
-        secure: false
+        router: () => 'ws://0.0.0.0:5002'
       },
       '/sensor_status': {
-        target: 'http://localhost:5002/sensor_status',
+        target: 'http://localhost:5002',
         ws: true,
         changeOrigin: true,
-        secure: false,
         rewrite: (path) => path.replace(/^\/sensor_status/, '/socket.io')
       },
       '/sensor_data': {
-        target: 'http://localhost:5002/sensor_data',
+        target: 'http://localhost:5002',
         ws: true,
         changeOrigin: true,
-        secure: false,
         rewrite: (path) => path.replace(/^\/sensor_data/, '/socket.io')
       }
     }
