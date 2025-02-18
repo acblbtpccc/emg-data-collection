@@ -38,8 +38,9 @@ socketio = SocketIO(
     app,
     cors_allowed_origins="*",
     async_mode='threading',
-    logger=True,
-    engineio_logger=True
+    logger=False,
+    engineio_logger=False,
+    allow_unsafe_werkzeug=True
 )
 
 threads = []
@@ -237,4 +238,4 @@ def signal_handler(sig, frame):
 
 if __name__ == '__main__':
     signal.signal(signal.SIGINT, signal_handler)
-    socketio.run(app, host='0.0.0.0', port=5002, debug=True)
+    socketio.run(app, host='0.0.0.0', port=5002, debug=False)

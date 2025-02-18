@@ -101,14 +101,14 @@ def save_depthandrgb_web(cfg, camera, stop_event, sample_folder_path, sample_fol
 def save_emg_web(cfg, stop_event, sample_folder_path, sample_folder_name, emg_queue):
     mac_to_info = {
         # 标准MAC地址 (Windows/Linux)
-        'E4:65:B8:14:BA:9A': ('01', 'L_Biceps'),
+        'E4:65:B8:14:58:D2': ('01', 'L_Biceps'),
         'D4:8A:FC:C5:8B:B2': ('02', 'R_Biceps'),
         'E4:65:B8:14:79:5E': ('03', 'L_Deltoid'),
-        'D4:8A:FC:C5:A5:CA': ('04', 'R_Deltoid'),
+        'EC:64:C9:6C:37:46': ('04', 'R_Deltoid'),
         'D4:8A:FC:C4:B0:C6': ('05', 'L_Latiss'),
-        'D4:8A:FC:C5:AB:32': ('06', 'R_Latiss'),
-        'D4:8A:FC:C5:9E:12': ('07', 'L_Trapezius'),
-        'D4:8A:FC:C5:06:7E': ('08', 'R_Trapezius'),
+        '88:13:BF:29:60:56': ('06', 'R_Latiss'),
+        'D4:8A:FC:C5:06:7E': ('07', 'L_Trapezius'),
+        'EC:64:C9:6B:7B:06': ('08', 'R_Trapezius'),
 
         # macOS UUID格式地址
         'EEF3BA12-3B30-2C9B-2969-BC28E44D5524': ('01', 'L_Biceps'),

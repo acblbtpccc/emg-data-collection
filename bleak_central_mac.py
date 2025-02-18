@@ -71,7 +71,6 @@ async def get_ntp_time():
         for attempt in range(2):  # 每个服务器尝试2次
             try:
                 if server["type"] == "ntp":
-                    # 处理标准NTP协议
                     response = client.request(
                         server["host"],
                         port=123,  # 显式指定NTP端口
@@ -293,7 +292,7 @@ async def connect_to_shields(emg_queue, stop_event):
                     shield_connected = client.is_connected
                     if shield_connected:
                         vec_myo_ware_clients.append(client)
-                        print(f"✅ Connected to {address} (Current numbers: {len(vec_myo_ware_clients)+1}/{needed_client_numbers})")
+                        print(f"✅ Connected to {address} (Current numbers: {len(vec_myo_ware_clients)}/{needed_client_numbers})")
                         update_sensor_status(len(vec_myo_ware_clients), needed_client_numbers)
                         break
                 except Exception as e:
@@ -323,7 +322,7 @@ async def monitor_connections(check_interval=30):
         for client in vec_myo_ware_clients:
             if not client.is_connected:
                 update_sensor_status(len(vec_myo_ware_clients), needed_client_numbers)
-                print('Stopping the program due to a sensor disconnection!', client.address)
+                print('❌ Stopping the program due to a sensor disconnection!', client.address)
                 tasks = [client.disconnect() for client in vec_myo_ware_clients if client.is_connected] # disconnect all client
                 await asyncio.gather(*tasks)
                 os._exit(1)
@@ -333,8 +332,6 @@ async def monitor_connections(check_interval=30):
 async def main(socketio_instance, emg_queue, stop_event):
     global ntp_time, boot_time_millis, socketio
     socketio = socketio_instance  # Use the passed SocketIO instance
-
-
 
     # Fetch NTP time
     ntp_time = await get_ntp_time()
