@@ -15,14 +15,14 @@
   let emgValues = {};
 
   const MAC_TO_MUSCLE ={
-    'E4:65:B8:14:BA:9A': { id: '01', name: 'L_Biceps', group: 'Biceps' },
+    'E4:65:B8:14:58:D2': { id: '01', name: 'L_Biceps', group: 'Biceps' },
     'D4:8A:FC:C5:8B:B2': { id: '02', name: 'R_Biceps', group: 'Biceps' },
     'E4:65:B8:14:79:5E': { id: '03', name: 'L_Deltoid', group: 'Deltoids' },
-    'D4:8A:FC:C5:A5:CA': { id: '04', name: 'R_Deltoid', group: 'Deltoids' },
+    'EC:64:C9:6C:37:46': { id: '04', name: 'R_Deltoid', group: 'Deltoids' },
     'D4:8A:FC:C4:B0:C6': { id: '05', name: 'L_Latiss', group: 'Latiss' },
-    'D4:8A:FC:C5:AB:32': { id: '06', name: 'R_Latiss', group: 'Latiss' },
-    'D4:8A:FC:C5:9E:12': { id: '07', name: 'L_Trapezius', group: 'Trapezius' },
-    'D4:8A:FC:C5:06:7E': { id: '08', name: 'R_Trapezius', group: 'Trapezius' },
+    '88:13:BF:29:60:56': { id: '06', name: 'R_Latiss', group: 'Latiss' },
+    'D4:8A:FC:C5:06:7E': { id: '07', name: 'L_Trapezius', group: 'Trapezius' },
+    'EC:64:C9:6B:7B:06': { id: '08', name: 'R_Trapezius', group: 'Trapezius' },
     'EEF3BA12-3B30-2C9B-2969-BC28E44D5524': { id: '01', name: 'L_Biceps', group: 'Biceps' },
     '47379FCE-9307-45EB-A7A2-06FBE7FCF125': { id: '02', name: 'R_Biceps', group: 'Biceps' },
     '96B35F9D-E06E-E5FB-79A3-030CC55A4545': { id: '03', name: 'L_Deltoid', group: 'Deltoids' },
