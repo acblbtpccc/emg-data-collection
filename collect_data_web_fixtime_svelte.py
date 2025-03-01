@@ -100,8 +100,8 @@ def start_sensors():
         camera = init_camera()
         logger.info(f"init_camera")
 
-        # set mode: Output both Depth and RGB frames in 30fps
-        set_datamode(camera, mode='PsDepthAndRGB_30')
+        # set mode: Output both Depth and RGB frames in 30fps PsDepthAndIR_15_RGB_30 PsDepthAndRGB_30
+        set_datamode(camera, mode='PsDepthAndIR_15_RGB_30')
 
         # set RGB resoultion: (640, 280), (1280, 720), (640, 360)
         set_resolution(camera, resol='PsRGB_Resolution_640_480')

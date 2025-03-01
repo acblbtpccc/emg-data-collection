@@ -41,15 +41,19 @@ def save_depthandrgb_web(cfg, camera, stop_event, sample_folder_path, sample_fol
     # init path of video file and frame info csv
     depth_video_path = os.path.join(sample_folder_path, sample_folder_name + '-depth.mp4')
     rgb_video_path = os.path.join(sample_folder_path, sample_folder_name + '-rgb.mp4')
+    ir_video_path = os.path.join(sample_folder_path, sample_folder_name + '-ir.mp4')
     frame_info_path = os.path.join(sample_folder_path, sample_folder_name + '-frame.csv')
     print("New video saving path: {:s}".format(depth_video_path))
 
     # init video writer
     vout_d = cv2.VideoWriter()
-    vout_d.open(depth_video_path, cv2.VideoWriter_fourcc(*'avc1'), cfg.CMAERA.FPS, (cfg.CMAERA.HEIGHT, cfg.CMAERA.WIDTH), isColor=False)
+    vout_d.open(depth_video_path, cv2.VideoWriter_fourcc(*'avc1'), 15, (cfg.CMAERA.HEIGHT, cfg.CMAERA.WIDTH), isColor=False)
 
     vout_rgb = cv2.VideoWriter()
     vout_rgb.open(rgb_video_path, cv2.VideoWriter_fourcc(*'avc1'), cfg.CMAERA.FPS, (cfg.CMAERA.HEIGHT, cfg.CMAERA.WIDTH), isColor=True)
+
+    vout_ir = cv2.VideoWriter()
+    vout_ir.open(ir_video_path, cv2.VideoWriter_fourcc(*'avc1'), 15, (cfg.CMAERA.HEIGHT, cfg.CMAERA.WIDTH), isColor=False)
 
     # init csv writer
     with open(frame_info_path, "a") as frame_info:
@@ -91,11 +95,25 @@ def save_depthandrgb_web(cfg, camera, stop_event, sample_folder_path, sample_fol
                     frametmp.dtype = numpy.uint8
                     rotated_frame = numpy.rot90(frametmp, k=-1)
                     vout_rgb.write(rotated_frame)
+            
+            if  frameready.ir:
+                ret, irframe = camera.Ps2_GetFrame(PsFrameType.PsIRFrame)
+                if  ret == 0:
+                    frametmp = numpy.ctypeslib.as_array(irframe.pFrameData, (1, irframe.width * irframe.height * 2))
+                    frametmp.dtype = numpy.uint16
+                    frametmp.shape = (irframe.height, irframe.width)
+                    img = numpy.int32(frametmp)
+                    img = img*255/3840
+                    img = numpy.clip(img, 0, 255)
+                    img = numpy.uint8(img)
+                    img = numpy.rot90(img, k=-1)
+                    vout_ir.write(img)
 
     finally:
         print("video {:s} has been writen!".format(depth_video_path))
         vout_d.release()
         vout_rgb.release()
+        vout_ir.release()
 
 
 def save_emg_web(cfg, stop_event, sample_folder_path, sample_folder_name, emg_queue):

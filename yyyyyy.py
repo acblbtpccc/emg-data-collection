@@ -13,24 +13,24 @@ def rename_files_and_folders(root_path):
                 
     for path, dirs, files in os.walk(root_path):
         for dirname in dirs:
-            if dirname.startswith("S5-A2-P1-"):
+            if dirname.startswith("S21-A1-Px-"):
                 print(dirname)
                 full_dir_path = os.path.join(path, dirname)
                 subdir_files = os.listdir(full_dir_path)
                 for filename in subdir_files:
-                    if filename.startswith("S5-A2-P1-"):
+                    if filename.startswith("S21-A1-Px-"):
                         old_file_path = os.path.join(full_dir_path, filename)
-                        new_file_path = os.path.join(full_dir_path, filename.replace("S5-A2-P1-", "S5-A2-P5-"))
+                        new_file_path = os.path.join(full_dir_path, filename.replace("S21-A1-Px-", "S21-A1-P1-"))
                         print(f"Renamed '{old_file_path}' to '{new_file_path}'")
                         shutil.move(old_file_path, new_file_path)
                 
-                new_file_path = full_dir_path.replace("S5-A2-P1-", "S5-A2-P5-")
+                new_file_path = full_dir_path.replace("S21-A1-Px-", "S21-A1-P1-")
                 print(f"Renamed '{full_dir_path}' to '{new_file_path}'")
                 shutil.move(full_dir_path, new_file_path)
                     
 
 # # 指定需要更改的起始目录
-start_dir = "/root/emg-data-collection/data/5/2"
+start_dir = "./data/21/1"
 rename_files_and_folders(start_dir)
 
 # import pandas as pd
